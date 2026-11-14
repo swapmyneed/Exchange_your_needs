@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Verification - Exchange_ur_needs</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { --bg:#0b0b10; --card:#16161f; --border:#26262f; --text:#f5f5f7; --muted:#a1a1aa;
+      --grad:linear-gradient(135deg,#7c3aed,#ec4899); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:'Poppins',Arial,sans-serif; background:var(--bg); color:var(--text);
+      background-image:radial-gradient(circle at top,rgba(124,58,237,0.3),transparent 60%); min-height:100vh; }
+    nav { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-bottom:1px solid var(--border); }
+    .logo { font-size:20px; font-weight:700; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; text-decoration:none; }
+    nav a.back { color:var(--muted); font-size:14px; text-decoration:none; }
+    .box { max-width:460px; margin:20px auto; padding:22px; background:var(--card); border:1px solid var(--border); border-radius:20px; }
+    h2 { margin:0 0 4px; text-align:center; }
+    .sub { text-align:center; color:var(--muted); font-size:13px; margin:0 0 16px; }
+    .rules { background:#0f0f15; border:1px solid var(--border); border-radius:14px; padding:12px 14px 12px 30px; font-size:13px; color:#d4d4d8; }
+    .rules li { margin:4px 0; }
+    .challenge { text-align:center; background:#0f0f15; border:1px solid #7c3aed; border-radius:14px; padding:14px; font-size:16px; margin-bottom:12px; }
+    .challenge b { color:#f9a8d4; font-size:20px; letter-spacing:2px; }
+    .cam { position:relative; border-radius:16px; overflow:hidden; background:#000; aspect-ratio:3/4; }
+    .cam video { width:100%; height:100%; object-fit:cover; }
+    #live { transform:scaleX(-1); }
+    .timer { position:absolute; top:10px; right:12px; color:#ef4444; font-weight:700; font-size:20px; }
+    .status { text-align:center; padding:14px; border-radius:14px; font-size:15px; background:#16a34a1f; border:1px solid #16a34a66; color:#4ade80; }
+    .big { display:block; width:100%; margin-top:14px; padding:14px; border:none; border-radius:25px; background:var(--grad);
+      color:#fff; font-size:16px; font-weight:600; font-family:inherit; text-align:center; text-decoration:none; }
+    .big.dark { background:#0f0f15; border:1px solid var(--border); }
+    .big:disabled { opacity:0.4; }
+    #msg { text-align:center; font-size:14px; min-height:20px; margin:10px 0 0; }
+    .lock { text-align:center; color:#4ade80; font-size:12px; margin-top:12px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Exchange_ur_needs</a>
+    <a href="dashboard.html" class="back">← Dashboard</a>
+  </nav>
+
+  <div class="box">
+    <h2>🎥 Video Verification</h2>
+    <p class="sub">Show us you're a real person. It only takes 5 seconds.</p>
+
+    <div id="stepIntro">
+      <ul class="rules">
+        <li>📱 Use your front camera in good light</li>
+        <li>🗣️ Say the code out loud and do the action shown</li>
+        <li>🔒 Only admins see this video. It's deleted after review.</li>
+      </ul>
+      <button class="big" id="startBtn">Start Camera</button>
+    </div>
+
+    <div id="stepRec" hidden>
+      <div class="challenge">Say <b id="code"></b><br>and <b id="action" style="font-size:16px;letter-spacing:0"></b></div>
+      <div class="cam"><video id="live" autoplay muted playsinline></video><div id="timer" class="timer"></div></div>
+      <button class="big" id="recBtn">⏺ Record 5 seconds</button>
+    </div>
+
+    <div id="stepReview" hidden>
+      <div class="cam"><video id="review" playsinline controls></video></div>
+      <button class="big" id="submitBtn">Submit Video ✅</button>
+      <button class="big dark" id="retakeBtn">🔄 Retake (new code)</button>
+    </div>
+
+    <div id="stepDone" hidden>
+      <div class="status" id="doneText">✅ Video sent! An admin will review it soon.</div>
+      <a href="dashboard.html" class="big">Back to Dashboard</a>
+    </div>
+
+    <p id="msg"></p>
+    <p class="lock">🔒 Live camera only · Private storage · Auto-deleted after review</p>
+  </div>
+
+  <script>
+    const db = supabase.createClient(
+      'https://ffhxyxhmjaqrgtgsrabt.supabase.co',
+      'sb_publishable_ldvPdgkT_QOelgFaNQqlVA_3h68AuH3'
+    );
+    const $ = (id) => document.getElementById(id);
+    let userId = null, stream = null, recorder = null, chunks = [], videoBlob = null, verif = null;
+
+    function show(step) {
+      ['stepIntro', 'stepRec', 'stepReview', 'stepDone'].forEach(s => $(s).hidden = (s !== step));
+    }
+    function msg(text, ok) {
+      $('msg').style.color = ok ? '#4ade80' : '#fca5a5';
+      $('msg').textContent = text || '';
+    }
+    function pickType() {
+      if (!window.MediaRecorder) return '';
+      for (const t of ['video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']) {
+        if (MediaRecorder.isTypeSupported(t)) return t;
+      }
+      return '';
+    }
+
+    // The server creates a fresh random code every time (can't be faked)
+    async function newChallenge() {
+      const { data, error } = await db.rpc('start_verification');
+      if (error) throw error;
+      verif = data[0];
+      $('code').textContent = verif.code.split('').join(' ');
+      $('action').textContent = verif.action;
+    }
+
+    $('startBtn').addEventListener('click', async () => {
+      msg('');
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: true
+        });
+        $('live').srcObject = stream;
+        await newChallenge();
+        show('stepRec');
+      } catch (e) {
+        msg(e.name === 'NotAllowedError'
+          ? 'Please allow camera and microphone access, then tap Start Camera again.'
+          : 'Error: ' + e.message);
+      }
+    });
+
+    $('recBtn').addEventListener('click', () => {
+      const mime = pickType();
+      if (!mime) { msg('Your browser cannot record video. Please use Chrome.'); return; }
+      chunks = [];
+      recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 1000000 });
+      recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+      recorder.onstop = () => {
+        videoBlob = new Blob(chunks, { type: mime.split(';')[0] });
+        $('review').src = URL.createObjectURL(videoBlob);
+        show('stepReview');
+      };
+      $('recBtn').disabled = true;
+      recorder.start();
+      let left = 5;
+      $('timer').textContent = '● ' + left;
+      const t = setInterval(() => {
+        left--;
+        if (left > 0) { $('timer').textContent = '● ' + left; }
+        else {
+          clearInterval(t);
+          $('timer').textContent = '';
+          recorder.stop();
+          $('recBtn').disabled = false;
+        }
+      }, 1000);
+    });
+
+    $('retakeBtn').addEventListener('click', async () => {
+      try {
+        URL.revokeObjectURL($('review').src);
+        await newChallenge();   // new code every retake
+        show('stepRec');
+      } catch (e) { msg('Error: ' + e.message); }
+    });
+
+    $('submitBtn').addEventListener('click', async () => {
+      const btn = $('submitBtn');
+      btn.disabled = true; btn.textContent = 'Uploading...';
+      try {
+        const type = videoBlob.type;
+        const ext = type === 'video/mp4' ? 'mp4' : 'webm';
+        const path = userId + '/' + verif.verification_id + '.' + ext;
+        const up = await db.storage.from('verification-videos')
+          .upload(path, videoBlob, { contentType: type, upsert: false });
+        if (up.error) throw up.error;
+        const { error } = await db.from('verifications')
+          .update({ video_path: path }).eq('id', verif.verification_id);
+        if (error) throw error;
+        stream.getTracks().forEach(t => t.stop());   // turn camera off
+        msg('');
+        show('stepDone');
+      } catch (e) {
+        msg('Error: ' + e.message);
+        btn.disabled = false; btn.textContent = 'Submit Video ✅';
+      }
+    });
+
+    (async function start() {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
+      userId = session.user.id;
+
+      // Already sent a video? Show its status instead
+      const { data } = await db.from('verifications')
+        .select('status, reason, video_path')
+        .eq('user_id', userId).not('video_path', 'is', null)
+        .order('created_at', { ascending: false }).limit(1);
+      const last = data && data[0];
+      if (last && last.status === 'pending') {
+        $('doneText').textContent = '⏳ Your video is waiting for admin review.';
+        show('stepDone');
+      } else if (last && last.status === 'approved') {
+        $('doneText').textContent = '✅ You are verified!';
+        show('stepDone');
+      } else {
+        if (last && last.status === 'rejected') {
+          msg('Your last video was not approved' + (last.reason ? ': ' + last.reason : '') + '. Please record again.');
+        }
+        show('stepIntro');
+      }
+    })();
+  </script>
+</body>
+</html>
