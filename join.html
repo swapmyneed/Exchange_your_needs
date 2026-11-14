@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Join - Exchange_ur_needs</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { margin:0; font-family:Arial, sans-serif; background:#0d0d0d; color:#fff; }
-    header { padding:15px; text-align:center; font-size:22px; font-weight:bold; color:#ff4f9a; }
+    header { padding:15px; text-align:center; font-size:22px; font-weight:bold; }
     header a { color:#ff4f9a; text-decoration:none; }
     .form-box { max-width:400px; margin:20px auto; padding:25px; background:#1f1f1f; border-radius:16px; }
     h2 { text-align:center; margin-top:0; }
@@ -17,6 +18,7 @@
     .check input { width:auto; margin:0; }
     button { width:100%; margin-top:20px; padding:14px; border:none; border-radius:25px;
       background:linear-gradient(135deg,#6a00f4,#ff4f9a); color:#fff; font-size:17px; font-weight:bold; }
+    button:disabled { opacity:0.6; }
     #msg { text-align:center; margin-top:15px; font-weight:bold; }
   </style>
 </head>
@@ -57,23 +59,64 @@
       <div class="check"><input type="checkbox" required> I confirm I am 18 or older</div>
       <div class="check"><input type="checkbox" required> I accept the Terms and Privacy Policy</div>
 
-      <button type="submit">Join Now</button>
+      <button type="submit" id="submitBtn">Join Now</button>
       <p id="msg"></p>
     </form>
   </div>
 
   <script>
-    document.getElementById('joinForm').addEventListener('submit', function (e) {
+    const db = supabase.createClient(
+      'https://ffhxyxhmjaqrgtgsrabt.supabase.co',
+      'sb_publishable_ldvPdgkT_QOelgFaNQqlVA_3h68AuH3'
+    );
+
+    const form = document.getElementById('joinForm');
+    const msg = document.getElementById('msg');
+    const btn = document.getElementById('submitBtn');
+
+    function show(text, ok) {
+      msg.style.color = ok ? '#4ade80' : '#ff6b6b';
+      msg.textContent = text;
+    }
+
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
-      const dob = new Date(document.getElementById('dob').value);
-      const age = Math.floor((Date.now() - dob) / (365.25 * 24 * 60 * 60 * 1000));
-      const msg = document.getElementById('msg');
-      if (age < 18) {
-        msg.style.color = '#ff6b6b';
-        msg.textContent = 'Sorry, you must be 18 or older to join.';
+      const val = id => document.getElementById(id).value.trim();
+
+      const dob = new Date(val('dob'));
+      const adult = new Date(dob.getFullYear() + 18, dob.getMonth(), dob.getDate());
+      if (adult > new Date()) {
+        show('Sorry, you must be 18 or older to join.', false);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+
+      const { error } = await db.auth.signUp({
+        email: val('email'),
+        password: document.getElementById('password').value,
+        options: {
+          emailRedirectTo: 'https://swapmyneed.github.io/Exchange_your_needs/',
+          data: {
+            full_name: val('name'),
+            gender: val('gender'),
+            dob: val('dob'),
+            phone: val('phone'),
+            city: val('city'),
+            bio: val('bio')
+          }
+        }
+      });
+
+      btn.disabled = false;
+      btn.textContent = 'Join Now';
+
+      if (error) {
+        show('Error: ' + error.message, false);
       } else {
-        msg.style.color = '#4ade80';
-        msg.textContent = 'Welcome, ' + document.getElementById('name').value + '! 🎉';
+        form.reset();
+        show('🎉 Account created! Check your email and tap the confirmation link.', true);
       }
     });
   </script>
