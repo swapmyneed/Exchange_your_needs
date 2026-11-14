@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root { --bg:#0b0b10; --card:#16161f; --border:#26262f; --text:#f5f5f7; --muted:#a1a1aa;
-      --pink:#ec4899; --grad:linear-gradient(135deg,#7c3aed,#ec4899); }
+      --grad:linear-gradient(135deg,#7c3aed,#ec4899); }
     * { box-sizing:border-box; }
     body { margin:0; font-family:'Poppins',Arial,sans-serif; background:var(--bg); color:var(--text);
       background-image:radial-gradient(circle at top,rgba(124,58,237,0.3),transparent 60%); min-height:100vh; }
@@ -29,6 +29,7 @@
     button, .btn { display:block; width:100%; margin-top:14px; padding:14px; border:none; border-radius:25px; background:var(--grad);
       color:#fff; font-size:16px; font-weight:600; text-align:center; text-decoration:none; font-family:inherit; }
     .btn-dark { background:#0f0f15; border:1px solid var(--border); }
+    .section { margin-top:22px; font-size:13px; color:var(--muted); text-align:center; }
     #saveMsg { text-align:center; font-size:14px; min-height:20px; margin:8px 0 0; }
   </style>
 </head>
@@ -39,6 +40,11 @@
     <h2 id="welcome">Loading...</h2>
     <p class="tagline-show" id="taglineShow"></p>
     <div id="status" class="status" style="display:none"></div>
+
+    <a href="members.html" class="btn">💞 Browse Members</a>
+    <a href="photos.html" class="btn">📸 My Photos</a>
+    <a href="verify.html" class="btn">🎥 Video Verification</a>
+
     <div id="info"></div>
 
     <label for="tagline">Your tagline (shown on your profile)</label>
@@ -47,8 +53,12 @@
     <button id="saveBtn">Save Tagline</button>
     <p id="saveMsg"></p>
 
-    <a href="photos.html" class="btn">📸 My Photos</a>
-    <a href="admin.html" id="adminLink" class="btn btn-dark" style="display:none">🛡️ Admin Panel</a>
+    <div id="adminBox" style="display:none">
+      <p class="section">🛡️ Admin tools</p>
+      <a href="review.html" class="btn btn-dark">🎥 Video Reviews</a>
+      <a href="admin.html" class="btn btn-dark">🛡️ Admin Panel</a>
+    </div>
+
     <button id="logoutBtn" class="btn-dark">Logout</button>
   </div>
 
@@ -63,9 +73,9 @@
     function showStatus(s) {
       const box = $('status');
       const text = {
-        pending:  '⏳ Your profile is waiting for admin approval. Other members will see you once it is verified.',
+        pending:  '⏳ Not verified yet. Add your photos and finish video verification to go live.',
         approved: '✅ Verified member. Your profile is live.',
-        rejected: '❌ Your profile was not approved. Update your tagline to resubmit it for review.'
+        rejected: '❌ Your profile was not approved. Please check your photos and record your video again.'
       };
       box.className = 'status ' + (s || 'pending');
       box.textContent = text[s] || text.pending;
@@ -85,7 +95,7 @@
       $('tagline').value = p.tagline || '';
       $('count').textContent = (p.tagline || '').length;
       showStatus(p.status);
-      if (p.is_admin) $('adminLink').style.display = 'block';
+      if (p.is_admin) $('adminBox').style.display = 'block';
 
       const info = $('info');
       info.innerHTML = '';
