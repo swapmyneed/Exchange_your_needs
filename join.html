@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join - Exchange_ur_needs</title>
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#0d0d0d; color:#fff; }
+    header { padding:15px; text-align:center; font-size:22px; font-weight:bold; color:#ff4f9a; }
+    header a { color:#ff4f9a; text-decoration:none; }
+    .form-box { max-width:400px; margin:20px auto; padding:25px; background:#1f1f1f; border-radius:16px; }
+    h2 { text-align:center; margin-top:0; }
+    label { display:block; margin-top:14px; font-size:14px; opacity:0.85; }
+    input, select, textarea { width:100%; padding:12px; margin-top:6px; border-radius:10px;
+      border:1px solid #444; background:#2b2b2b; color:#fff; font-size:15px; box-sizing:border-box; }
+    .check { display:flex; gap:8px; align-items:center; margin-top:14px; font-size:14px; }
+    .check input { width:auto; margin:0; }
+    button { width:100%; margin-top:20px; padding:14px; border:none; border-radius:25px;
+      background:linear-gradient(135deg,#6a00f4,#ff4f9a); color:#fff; font-size:17px; font-weight:bold; }
+    #msg { text-align:center; margin-top:15px; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <header><a href="index.html">Exchange_ur_needs</a></header>
+
+  <div class="form-box">
+    <h2>Create Your Account</h2>
+    <form id="joinForm">
+      <label>Full Name</label>
+      <input type="text" id="name" required>
+
+      <label>Gender</label>
+      <select id="gender" required>
+        <option value="">Select</option>
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+
+      <label>Date of Birth</label>
+      <input type="date" id="dob" required>
+
+      <label>Email</label>
+      <input type="email" id="email" required>
+
+      <label>Mobile Number</label>
+      <input type="tel" id="phone" pattern="[0-9]{10}" placeholder="10 digit number" required>
+
+      <label>Password</label>
+      <input type="password" id="password" minlength="6" required>
+
+      <label>City</label>
+      <input type="text" id="city" required>
+
+      <label>Short Bio</label>
+      <textarea id="bio" rows="3"></textarea>
+
+      <div class="check"><input type="checkbox" required> I confirm I am 18 or older</div>
+      <div class="check"><input type="checkbox" required> I accept the Terms and Privacy Policy</div>
+
+      <button type="submit">Join Now</button>
+      <p id="msg"></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('joinForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const dob = new Date(document.getElementById('dob').value);
+      const age = Math.floor((Date.now() - dob) / (365.25 * 24 * 60 * 60 * 1000));
+      const msg = document.getElementById('msg');
+      if (age < 18) {
+        msg.style.color = '#ff6b6b';
+        msg.textContent = 'Sorry, you must be 18 or older to join.';
+      } else {
+        msg.style.color = '#4ade80';
+        msg.textContent = 'Welcome, ' + document.getElementById('name').value + '! 🎉';
+      }
+    });
+  </script>
+</body>
+</html>
