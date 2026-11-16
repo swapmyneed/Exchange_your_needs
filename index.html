@@ -3,53 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Exchange Ur Needs — Bengaluru Elite</title>
+    <title>Exchange Ur Needs — Bengaluru Elite Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #02040a; color: #f9fafb; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030712; color: #f9fafb; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .glass-panel { background: linear-gradient(135deg, rgba(13, 17, 28, 0.94), rgba(3, 7, 18, 0.99)); backdrop-filter: blur(24px); border: 1px solid rgba(236, 72, 153, 0.28); }
-        .neon-glow { box-shadow: 0 0 45px rgba(236, 72, 153, 0.25); }
-        .neon-glow-purple { box-shadow: 0 0 45px rgba(168, 85, 247, 0.25); }
+        .glass-panel { background: linear-gradient(135deg, rgba(17, 24, 39, 0.85), rgba(3, 7, 18, 0.95)); backdrop-filter: blur(28px); border: 1px solid rgba(236, 72, 153, 0.22); }
+        .glass-input { background: rgba(3, 7, 18, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-input:focus { border-color: rgba(236, 72, 153, 0.6); box-shadow: 0 0 20px rgba(236, 72, 153, 0.2); }
+        .neon-glow { box-shadow: 0 0 50px rgba(236, 72, 153, 0.2); }
+        .neon-glow-purple { box-shadow: 0 0 50px rgba(168, 85, 247, 0.2); }
         @keyframes pulse-glow { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.04); opacity: 1; } }
         .pulse-live { animation: pulse-glow 2.5s infinite ease-in-out; }
     </style>
 </head>
-<body class="bg-[#02040a] text-gray-100 flex justify-center items-center min-h-screen m-0 p-0">
+<body class="bg-[#030712] text-gray-100 flex justify-center items-center min-h-screen m-0 p-0">
 
-    <div id="app" class="w-full max-w-md h-[100vh] sm:h-[900px] bg-[#02040a] sm:rounded-[38px] sm:border sm:border-gray-800 flex flex-col relative overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.95)]">
+    <div id="app" class="w-full max-w-md h-[100vh] sm:h-[900px] bg-[#030712] sm:rounded-[40px] sm:border sm:border-gray-800/80 flex flex-col relative overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.95)]">
         
-        <!-- Ambient Atmosphere Lighting -->
-        <div class="absolute -top-36 -left-36 w-72 h-72 bg-pink-600/30 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
-        <div class="absolute top-1/3 -right-36 w-72 h-72 bg-purple-600/30 rounded-full blur-[100px] pointer-events-none animate-pulse" style="animation-delay: 1.5s;"></div>
-        <div class="absolute -bottom-36 left-1/4 w-72 h-72 bg-indigo-600/25 rounded-full blur-[100px] pointer-events-none"></div>
+        <!-- Premium Ambient Atmosphere Lighting -->
+        <div class="absolute -top-40 -left-40 w-80 h-80 bg-pink-600/25 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+        <div class="absolute top-1/3 -right-40 w-80 h-80 bg-purple-600/25 rounded-full blur-[120px] pointer-events-none animate-pulse" style="animation-delay: 1.5s;"></div>
+        <div class="absolute -bottom-40 left-1/4 w-80 h-80 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none"></div>
 
-        <!-- Custom Toast -->
-        <div id="customToast" class="absolute top-4 left-4 right-4 z-50 transform -translate-y-36 transition-transform duration-300 pointer-events-none">
-            <div class="glass-panel bg-gray-900/95 border-pink-500/60 p-4 rounded-2xl shadow-2xl flex items-center gap-3">
-                <span id="toastIcon" class="text-2xl">🔥</span>
+        <!-- Custom Luxury Toast Notification -->
+        <div id="customToast" class="absolute top-4 left-4 right-4 z-50 transform -translate-y-40 transition-transform duration-300 pointer-events-none">
+            <div class="glass-panel bg-gray-950/95 border-pink-500/50 p-4 rounded-2xl shadow-2xl flex items-center gap-3.5">
+                <span id="toastIcon" class="text-2xl">✨</span>
                 <div class="flex-1">
-                    <p id="toastTitle" class="text-xs font-extrabold text-white">Elite Notification</p>
-                    <p id="toastDesc" class="text-[11px] text-gray-300">Action completed successfully.</p>
+                    <p id="toastTitle" class="text-xs font-extrabold text-white tracking-wide">Elite Notification</p>
+                    <p id="toastDesc" class="text-[11px] text-gray-300 font-medium">Action completed successfully.</p>
                 </div>
             </div>
         </div>
 
         <!-- Header -->
-        <header class="px-5 py-4 glass-panel border-b border-gray-800/80 flex items-center justify-between z-20">
+        <header class="px-5 py-4 glass-panel border-b border-gray-800/60 flex items-center justify-between z-20">
             <div>
                 <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-pink-400 via-purple-300 to-indigo-300 bg-clip-text text-transparent flex items-center gap-1.5">
-                    💎 Exchange Ur Needs <span class="text-[9px] bg-pink-600/30 text-pink-300 px-2 py-0.5 rounded-full border border-pink-500/40 font-bold">ELITE BLR</span>
+                    💎 Exchange Ur Needs <span class="text-[9px] bg-pink-600/20 text-pink-300 px-2 py-0.5 rounded-full border border-pink-500/40 font-extrabold tracking-wider">ELITE BLR</span>
                 </h1>
-                <p class="text-[10px] text-gray-400 font-medium">Real Meets • Private Spaces • Verified Matches</p>
+                <p class="text-[10px] text-gray-400 font-medium tracking-wide">Verified Profiles • Private Meetups • Bengaluru</p>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="openPricingModal()" class="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold shadow-lg shadow-pink-600/30 hover:scale-105 transition-transform flex items-center gap-1">
+                <button onclick="openPricingModal()" class="text-xs px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold shadow-lg shadow-pink-600/25 hover:scale-105 transition-transform flex items-center gap-1">
                     💎 <span id="headerDiamonds">10</span>
                 </button>
-                <button onclick="toggleAdminMode()" id="adminToggleBtn" class="text-xs px-3 py-1.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60 font-semibold hover:bg-purple-900/80 transition-all">
+                <button onclick="toggleAdminMode()" id="adminToggleBtn" class="text-xs px-3 py-1.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/50 font-bold hover:bg-purple-900/80 transition-all">
                     ⚙️ Admin
                 </button>
             </div>
@@ -64,24 +66,24 @@
                 <!-- Neighborhood Filters -->
                 <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1 text-xs">
                     <button onclick="filterLocation('all', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold whitespace-nowrap shadow-lg shadow-pink-600/20">All BLR</button>
-                    <button onclick="filterLocation('Koramangala', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">Koramangala</button>
-                    <button onclick="filterLocation('Indiranagar', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">Indiranagar</button>
-                    <button onclick="filterLocation('HSR Layout', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">HSR Layout</button>
-                    <button onclick="filterLocation('MG Road', event)" class="loc-pill px-4 py-1.5 rounded-full bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">MG Road</button>
+                    <button onclick="filterLocation('Koramangala', event)" class="loc-pill px-4 py-2 rounded-2xl glass-input text-gray-300 whitespace-nowrap font-medium hover:border-pink-500/40">Koramangala</button>
+                    <button onclick="filterLocation('Indiranagar', event)" class="loc-pill px-4 py-2 rounded-2xl glass-input text-gray-300 whitespace-nowrap font-medium hover:border-pink-500/40">Indiranagar</button>
+                    <button onclick="filterLocation('HSR Layout', event)" class="loc-pill px-4 py-2 rounded-2xl glass-input text-gray-300 whitespace-nowrap font-medium hover:border-pink-500/40">HSR Layout</button>
+                    <button onclick="filterLocation('MG Road', event)" class="loc-pill px-4 py-2 rounded-2xl glass-input text-gray-300 whitespace-nowrap font-medium hover:border-pink-500/40">MG Road</button>
                 </div>
 
                 <!-- Feed Cards with Rich Media -->
                 <div id="approvedProfilesList" class="space-y-5">
                     
                     <!-- Profile Card 1 -->
-                    <div class="profile-card glass-panel rounded-[30px] overflow-hidden shadow-2xl relative border border-gray-800/90" data-location="Koramangala" id="demoCard1">
+                    <div class="profile-card glass-panel rounded-[32px] overflow-hidden shadow-2xl relative border border-gray-800/80" data-location="Koramangala" id="demoCard1">
                         <div class="relative h-[460px] bg-gray-950 overflow-hidden">
                             <div class="w-full h-full relative cursor-pointer" onclick="cyclePhotoSlide('demoCard1', 3)">
                                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85" alt="Pooja" class="w-full h-full object-cover profile-slide-demoCard1 block">
                                 <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=85" alt="Pooja 2" class="w-full h-full object-cover profile-slide-demoCard1 hidden">
                                 <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=85" alt="Pooja 3" class="w-full h-full object-cover profile-slide-demoCard1 hidden">
                             </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#02040a] via-black/25 to-black/40 pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#030712] via-black/30 to-black/50 pointer-events-none"></div>
                             
                             <!-- Indicators -->
                             <div class="absolute top-3 left-3 right-3 flex gap-1.5 z-10 px-1 pointer-events-none">
@@ -92,11 +94,11 @@
 
                             <!-- Badges -->
                             <div class="absolute top-7 left-3 flex items-center gap-1.5">
-                                <span class="bg-emerald-950/95 backdrop-blur-md text-emerald-300 px-3.5 py-1 rounded-full text-[10px] font-extrabold border border-emerald-500/50 flex items-center gap-1.5 shadow-lg">
+                                <span class="bg-emerald-950/90 backdrop-blur-md text-emerald-300 px-3.5 py-1 rounded-full text-[10px] font-extrabold border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
                                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Cam Verified ✓
                                 </span>
                             </div>
-                            <button onclick="openCurrentCardPhoto('demoCard1', 'Pooja, 24')" class="absolute top-7 right-3 bg-black/60 hover:bg-black/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold border border-white/20 text-white z-20">
+                            <button onclick="openCurrentCardPhoto('demoCard1', 'Pooja, 24')" class="absolute top-7 right-3 bg-black/60 hover:bg-black/90 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold border border-white/20 text-white z-20 shadow-md">
                                 🔍 Zoom Photo
                             </button>
                             
@@ -109,15 +111,15 @@
                                 <p class="text-xs text-gray-200 font-semibold drop-shadow flex items-center gap-1">📍 Koramangala, Bengaluru • ⚡ Active Now</p>
                                 
                                 <div class="pt-1 flex gap-1.5 flex-wrap">
-                                    <span class="bg-purple-950/90 border border-purple-700/60 text-purple-200 text-[10px] px-3 py-1 rounded-xl font-bold">🏠 Have Private Space</span>
-                                    <span class="bg-pink-950/90 border border-pink-700/60 text-pink-200 text-[10px] px-3 py-1 rounded-xl font-bold">🍷 Drinks & Deep Chat in Private</span>
+                                    <span class="bg-purple-950/80 border border-purple-700/50 text-purple-200 text-[10px] px-3 py-1 rounded-xl font-bold">🏠 Have Private Space</span>
+                                    <span class="bg-pink-950/80 border border-pink-700/50 text-pink-200 text-[10px] px-3 py-1 rounded-xl font-bold">🍷 Drinks & Deep Chat in Private</span>
                                     <span class="bg-black/70 border border-white/10 text-gray-300 text-[10px] px-2.5 py-1 rounded-xl photo-counter-demoCard1">📷 Tap photo (1/3)</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="p-4 space-y-3.5">
-                            <div class="bg-gray-950/95 p-3.5 rounded-2xl border border-gray-800/80 space-y-1">
+                            <div class="bg-gray-950/90 p-3.5 rounded-2xl border border-gray-800/80 space-y-1">
                                 <p class="text-[10px] uppercase tracking-wider text-pink-400 font-extrabold">What I'm Looking For Tonight</p>
                                 <p class="text-xs text-gray-200 font-medium leading-relaxed">"Looking for a gentleman with good vibes to chill at my private apartment in Koramangala. Let's make it memorable with drinks and good conversation."</p>
                             </div>
@@ -128,14 +130,14 @@
                     </div>
 
                     <!-- Profile Card 2 -->
-                    <div class="profile-card glass-panel rounded-[30px] overflow-hidden shadow-2xl relative border border-gray-800/90" data-location="Indiranagar" id="demoCard2">
+                    <div class="profile-card glass-panel rounded-[32px] overflow-hidden shadow-2xl relative border border-gray-800/80" data-location="Indiranagar" id="demoCard2">
                         <div class="relative h-[460px] bg-gray-950 overflow-hidden">
                             <div class="w-full h-full relative cursor-pointer" onclick="cyclePhotoSlide('demoCard2', 3)">
                                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=85" alt="Ananya" class="w-full h-full object-cover profile-slide-demoCard2 block">
                                 <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=85" alt="Ananya 2" class="w-full h-full object-cover profile-slide-demoCard2 hidden">
                                 <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=85" alt="Ananya 3" class="w-full h-full object-cover profile-slide-demoCard2 hidden">
                             </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#02040a] via-black/25 to-black/40 pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#030712] via-black/30 to-black/50 pointer-events-none"></div>
                             
                             <div class="absolute top-3 left-3 right-3 flex gap-1.5 z-10 px-1 pointer-events-none">
                                 <div class="h-1 rounded-full flex-1 bg-white/90 photo-dot-demoCard2"></div>
@@ -144,11 +146,11 @@
                             </div>
 
                             <div class="absolute top-7 left-3">
-                                <span class="bg-emerald-950/95 backdrop-blur-md text-emerald-300 px-3.5 py-1 rounded-full text-[10px] font-extrabold border border-emerald-500/50 flex items-center gap-1.5 shadow-lg">
+                                <span class="bg-emerald-950/90 backdrop-blur-md text-emerald-300 px-3.5 py-1 rounded-full text-[10px] font-extrabold border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
                                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Cam Verified ✓
                                 </span>
                             </div>
-                            <button onclick="openCurrentCardPhoto('demoCard2', 'Ananya, 26')" class="absolute top-7 right-3 bg-black/60 hover:bg-black/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold border border-white/20 text-white z-20">
+                            <button onclick="openCurrentCardPhoto('demoCard2', 'Ananya, 26')" class="absolute top-7 right-3 bg-black/60 hover:bg-black/90 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold border border-white/20 text-white z-20 shadow-md">
                                 🔍 Zoom Photo
                             </button>
                             
@@ -160,15 +162,15 @@
                                 <p class="text-xs text-gray-200 font-semibold drop-shadow flex items-center gap-1">📍 Indiranagar, Bengaluru • ⚡ Tonight</p>
                                 
                                 <div class="pt-1 flex gap-1.5 flex-wrap">
-                                    <span class="bg-amber-950/90 border border-amber-700/60 text-amber-200 text-[10px] px-3 py-1 rounded-xl font-bold">🏨 Need Place / Hotel</span>
-                                    <span class="bg-purple-950/90 border border-purple-700/60 text-purple-200 text-[10px] px-3 py-1 rounded-xl font-bold">🍸 Pub Hopping & Late Night Fun</span>
+                                    <span class="bg-amber-950/80 border border-amber-700/50 text-amber-200 text-[10px] px-3 py-1 rounded-xl font-bold">🏨 Need Place / Hotel</span>
+                                    <span class="bg-purple-950/80 border border-purple-700/50 text-purple-200 text-[10px] px-3 py-1 rounded-xl font-bold">🍸 Pub Hopping & Late Night Fun</span>
                                     <span class="bg-black/70 border border-white/10 text-gray-300 text-[10px] px-2.5 py-1 rounded-xl photo-counter-demoCard2">📷 Tap photo (1/3)</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="p-4 space-y-3.5">
-                            <div class="bg-gray-950/95 p-3.5 rounded-2xl border border-gray-800/80 space-y-1">
+                            <div class="bg-gray-950/90 p-3.5 rounded-2xl border border-gray-800/80 space-y-1">
                                 <p class="text-[10px] uppercase tracking-wider text-purple-400 font-extrabold">What I'm Looking For Tonight</p>
                                 <p class="text-xs text-gray-200 font-medium leading-relaxed">"Let's grab drinks around 100ft Road Indiranagar and see where the night takes us. Looking for a generous partner for luxury hotel date."</p>
                             </div>
@@ -200,11 +202,11 @@
                         <h3 class="font-bold text-pink-400 text-sm">💳 Direct UPI Integration</h3>
                         <div>
                             <label class="text-gray-400 block mb-1">Your Business UPI ID (GPay/PhonePe/Paytm)</label>
-                            <input type="text" id="adminUpiInput" placeholder="e.g. yourname@okaxis" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white font-mono">
+                            <input type="text" id="adminUpiInput" placeholder="e.g. yourname@okaxis" class="w-full glass-input rounded-2xl px-3.5 py-3 text-white font-mono">
                         </div>
                         <div>
                             <label class="text-gray-400 block mb-1">Merchant Business Name</label>
-                            <input type="text" id="adminMerchantInput" value="ExchangeUrNeeds" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white">
+                            <input type="text" id="adminMerchantInput" value="ExchangeUrNeeds" class="w-full glass-input rounded-2xl px-3.5 py-3 text-white">
                         </div>
                         <button onclick="saveUpiSettings()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 font-bold rounded-2xl text-white shadow-lg">
                             Save UPI Credentials Permanently
@@ -268,13 +270,13 @@
                         </div>
                     </div>
 
-                    <div id="chatMessagesList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#02040a] text-xs">
+                    <div id="chatMessagesList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#030712] text-xs">
                         <div class="text-center my-2"><span class="bg-gray-900 text-gray-400 text-[10px] px-3 py-1 rounded-full border border-gray-800">🔒 Secure End-to-End Encrypted Elite Connection</span></div>
                         <div class="bg-gray-900 text-gray-200 p-3 rounded-2xl max-w-[82%] border border-gray-800">Hey! Let's connect at Koramangala this evening. 👋</div>
                     </div>
 
                     <div class="p-3 bg-gray-900/95 border-t border-gray-800 flex items-center gap-2">
-                        <input type="text" id="chatInputMsg" placeholder="Type a message..." class="flex-1 bg-gray-950 border border-gray-800 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-pink-500">
+                        <input type="text" id="chatInputMsg" placeholder="Type a message..." class="flex-1 glass-input rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-pink-500">
                         <button onclick="sendChatMessage()" class="px-5 py-3 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl text-xs font-bold shadow-lg">Send</button>
                     </div>
                 </div>
@@ -336,7 +338,7 @@
                 <p id="approachLimitNotice" class="text-xs text-gray-300">Spends <strong class="text-pink-400">1 Diamond 💎</strong>. (Max 2 requests per day if rejected).</p>
                 <div>
                     <label class="text-xs text-gray-400 block mb-1.5 font-bold">Your Custom Message</label>
-                    <textarea id="approachMsgInput" class="w-full bg-gray-950 border border-gray-800 rounded-2xl p-3.5 text-white text-xs h-28 focus:outline-none focus:border-pink-500" placeholder="Hey! Loved your vibe. Let's hang out at Koramangala this evening?"></textarea>
+                    <textarea id="approachMsgInput" class="w-full glass-input rounded-2xl p-3.5 text-white text-xs h-28 focus:outline-none focus:border-pink-500" placeholder="Hey! Loved your vibe. Let's hang out at Koramangala this evening?"></textarea>
                 </div>
                 <button onclick="confirmSendApproach()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-extrabold text-xs text-white shadow-lg">
                     Send Elite Request (-1 Diamond)
@@ -355,7 +357,7 @@
                     <button onclick="closePricingModal()" class="text-gray-400 text-lg font-bold">✕</button>
                 </div>
                 <div class="space-y-3 text-xs">
-                    <div onclick="selectPlan('1 Day Elite Pass', 49, 15)" class="bg-gray-950 border border-gray-800 hover:border-pink-500 p-4 rounded-2xl cursor-pointer transition-all flex justify-between items-center">
+                    <div onclick="selectPlan('1 Day Elite Pass', 49, 15)" class="glass-input hover:border-pink-500 p-4 rounded-2xl cursor-pointer transition-all flex justify-between items-center">
                         <div><p class="font-bold text-gray-200">1 Day Elite Pass</p><p class="text-[10px] text-gray-400">15 Send Requests & Live Chat</p></div>
                         <div class="text-right"><p class="font-extrabold text-pink-400 text-sm">₹49</p><span class="text-[9px] bg-pink-950 text-pink-300 px-2.5 py-0.5 rounded-full font-bold">15 Diamonds</span></div>
                     </div>
@@ -406,12 +408,12 @@
                         <label class="text-gray-400 block mb-1.5 font-bold">Mobile Number (WhatsApp/SMS)</label>
                         <div class="flex gap-2">
                             <input type="text" value="+91" readonly class="w-16 bg-gray-900 border border-gray-800 rounded-2xl text-center text-white font-bold">
-                            <input type="tel" id="loginPhone" placeholder="9876543210" maxlength="10" class="flex-1 bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
+                            <input type="tel" id="loginPhone" placeholder="9876543210" maxlength="10" class="flex-1 glass-input rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
                         </div>
                     </div>
                     <div id="otpSection" class="hidden space-y-2">
                         <label class="text-gray-400 block mb-1.5 font-bold">Enter 4-Digit OTP (Sent to Phone)</label>
-                        <input type="text" id="loginOtpInput" placeholder="1 2 3 4" maxlength="4" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-center tracking-widest text-lg text-white font-bold focus:outline-none focus:border-pink-500">
+                        <input type="text" id="loginOtpInput" placeholder="1 2 3 4" maxlength="4" class="w-full glass-input rounded-2xl px-3.5 py-3 text-center tracking-widest text-lg text-white font-bold focus:outline-none focus:border-pink-500">
                     </div>
                     <button id="otpActionBtn" onclick="requestOtpLogin()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-extrabold text-sm text-white shadow-lg">Send Verification OTP</button>
                 </div>
@@ -420,43 +422,43 @@
                 <div id="authViewSignup" class="space-y-3.5 text-xs">
                     <div>
                         <label class="text-gray-400 block mb-1.5 font-bold">Your Full Name & Age</label>
-                        <input type="text" id="regName" placeholder="Suresh Manikanta, 27" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
+                        <input type="text" id="regName" placeholder="Suresh Manikanta, 27" class="w-full glass-input rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-gray-400 block mb-1.5 font-bold">Neighborhood</label>
-                            <select id="regLocation" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-pink-500">
-                                <option value="Koramangala">Koramangala</option>
-                                <option value="Indiranagar">Indiranagar</option>
-                                <option value="HSR Layout">HSR Layout</option>
-                                <option value="MG Road">MG Road</option>
-                                <option value="Whitefield">Whitefield</option>
+                            <select id="regLocation" class="w-full glass-input rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-pink-500">
+                                <option value="Koramangala" class="bg-gray-900">Koramangala</option>
+                                <option value="Indiranagar" class="bg-gray-900">Indiranagar</option>
+                                <option value="HSR Layout" class="bg-gray-900">HSR Layout</option>
+                                <option value="MG Road" class="bg-gray-900">MG Road</option>
+                                <option value="Whitefield" class="bg-gray-900">Whitefield</option>
                             </select>
                         </div>
                         <div>
                             <label class="text-gray-400 block mb-1.5 font-bold">Have a Place?</label>
-                            <select id="regPlaceStatus" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-pink-500">
-                                <option value="🏠 Have Private Space">🏠 Have Private Space</option>
-                                <option value="🏨 Need Place / Hotel">🏨 Need Place / Hotel</option>
-                                <option value="🚗 Flexible / Out">🚗 Flexible / Out</option>
+                            <select id="regPlaceStatus" class="w-full glass-input rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-pink-500">
+                                <option value="🏠 Have Private Space" class="bg-gray-900">🏠 Have Private Space</option>
+                                <option value="🏨 Need Place / Hotel" class="bg-gray-900">🏨 Need Place / Hotel</option>
+                                <option value="🚗 Flexible / Out" class="bg-gray-900">🚗 Flexible / Out</option>
                             </select>
                         </div>
                     </div>
 
                     <div>
                         <label class="text-gray-400 block mb-1.5 font-bold">What Are You Looking For? (Relatable & Bold)</label>
-                        <select id="regVibe" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
-                            <option value="🍷 Drinks & Deep Chat in Private">🍷 Drinks & Deep Chat in Private</option>
-                            <option value="🔥 Discreet Meetup & Chill">🔥 Discreet Meetup & Chill</option>
-                            <option value="🏨 Luxury Date & Hotel Hangout">🏨 Luxury Date & Hotel Hangout</option>
-                            <option value="🍸 Pub Hopping & Late Night Fun">🍸 Pub Hopping & Late Night Fun</option>
+                        <select id="regVibe" class="w-full glass-input rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
+                            <option value="🍷 Drinks & Deep Chat in Private" class="bg-gray-900">🍷 Drinks & Deep Chat in Private</option>
+                            <option value="🔥 Discreet Meetup & Chill" class="bg-gray-900">🔥 Discreet Meetup & Chill</option>
+                            <option value="🏨 Luxury Date & Hotel Hangout" class="bg-gray-900">🏨 Luxury Date & Hotel Hangout</option>
+                            <option value="🍸 Pub Hopping & Late Night Fun" class="bg-gray-900">🍸 Pub Hopping & Late Night Fun</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="text-gray-400 block mb-1.5 font-bold">Upload Photos (2 to 6 photos - Tap [X] to remove)</label>
-                        <input type="file" id="regPhotoInput" accept="image/*" multiple class="w-full bg-gray-950 border border-gray-800 rounded-2xl p-2 text-white" onchange="handlePhotoUpload(event)">
+                        <input type="file" id="regPhotoInput" accept="image/*" multiple class="w-full glass-input rounded-2xl p-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-pink-600 file:text-white hover:file:bg-pink-500" onchange="handlePhotoUpload(event)">
                         <div id="photoPreviewGrid" class="grid grid-cols-3 gap-2 mt-2"></div>
                     </div>
 
@@ -479,23 +481,23 @@
                         </div>
                         <div class="flex gap-2">
                             <button id="startOtpCamBtn" type="button" onclick="initOtpCamera()" class="flex-1 py-2 bg-zinc-800 text-white rounded-xl font-bold text-[10px]">1. Start Camera</button>
-                            <button id="recordOtpVidBtn" type="button" onclick="recordVerificationVideo()" disabled class="flex-1 py-2 bg-amber-500 disabled:bg-zinc-800 text-black font-bold text-[10px]">2. Record 5s Video</button>
+                            <button id="recordOtpVidBtn" type="button" onclick="recordVerificationVideo()" class="flex-1 py-2 bg-amber-500 text-black font-bold text-[10px]">2. Record 5s Video</button>
                         </div>
                         <p id="videoCamStatusText" class="text-[10px] text-gray-400">Required for Admin Approval.</p>
                     </div>
 
-                    <button type="button" onclick="submitRegistration()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 rounded-2xl font-extrabold text-sm text-white shadow-xl">Submit Approval</button>
+                    <button type="button" onclick="submitRegistration()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 rounded-2xl font-extrabold text-sm text-white shadow-xl hover:opacity-95 transition-all">Submit Approval</button>
                 </div>
             </div>
         </div>
 
         <!-- Pending Approval Lock Screen Modal -->
         <div id="pendingApprovalScreen" class="fixed inset-0 z-50 hidden bg-zinc-950 flex items-center justify-center p-6 text-center text-white">
-            <div class="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
-                <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-xl font-bold">⏳</div>
+            <div class="max-w-sm w-full glass-panel border border-zinc-800 rounded-3xl p-6 space-y-4 shadow-2xl">
+                <div class="w-14 h-14 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-2xl font-bold">⏳</div>
                 <h2 class="text-xl font-bold">Verification Under Review</h2>
-                <p class="text-sm text-zinc-400">Your profile and video OTP clip have been submitted to the admin. Once approved, your account unlocks automatically.</p>
-                <button onclick="logoutUser()" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold">Back to Home</button>
+                <p class="text-xs text-zinc-300 leading-relaxed">Your profile and video OTP clip have been submitted to the admin. Once approved, your account unlocks automatically.</p>
+                <button onclick="logoutUser()" class="w-full py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-xs font-bold transition-all">Back to Home</button>
             </div>
         </div>
 
@@ -521,7 +523,6 @@
         let selectedPlanInfo = {};
         
         let otpMediaStream = null;
-        let isVideoOtpRecorded = true;
         let currentGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString();
 
         let userDiamonds = parseInt(localStorage.getItem('eun_diamonds') || "10");
@@ -576,14 +577,14 @@
             }
         });
 
-        function showToast(title, desc, icon = "🔥") {
+        function showToast(title, desc, icon = "✨") {
             const toast = document.getElementById('customToast');
             if (!toast) return;
             document.getElementById('toastTitle').innerText = title;
             document.getElementById('toastDesc').innerText = desc;
             document.getElementById('toastIcon').innerText = icon;
             toast.style.transform = 'translateY(0)';
-            setTimeout(() => { toast.style.transform = 'translateY(-130px)'; }, 3800);
+            setTimeout(() => { toast.style.transform = 'translateY(-140px)'; }, 3800);
         }
 
         function updateDiamondDisplay() {
@@ -888,7 +889,7 @@
         }
 
         function filterLocation(loc, evt) {
-            document.querySelectorAll('.loc-pill').forEach(b => b.className = "loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium");
+            document.querySelectorAll('.loc-pill').forEach(b => b.className = "loc-pill px-4 py-2 rounded-2xl glass-input text-gray-300 whitespace-nowrap font-medium hover:border-pink-500/40");
             if (evt && evt.target) evt.target.className = "loc-pill px-4 py-2 rounded-2xl bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold whitespace-nowrap shadow-lg shadow-pink-600/20";
             document.querySelectorAll('.profile-card').forEach(card => card.classList.toggle('hidden', loc !== 'all' && card.dataset.location !== loc));
         }
@@ -973,12 +974,10 @@
                 const videoEl = document.getElementById('otpWebcamVideo');
                 if (videoEl) videoEl.srcObject = otpMediaStream;
                 document.getElementById('startOtpCamBtn').classList.add('hidden');
-                document.getElementById('recordOtpVidBtn').disabled = false;
                 document.getElementById('videoCamStatusText').innerText = "Camera active. Click record and say code: " + currentGeneratedOtp;
             } catch (err) {
                 showToast("Camera Active", "Simulated Video OTP Ready ✓", "✓");
                 document.getElementById('startOtpCamBtn').classList.add('hidden');
-                document.getElementById('recordOtpVidBtn').disabled = false;
             }
         }
 
@@ -992,7 +991,6 @@
 
             setTimeout(() => {
                 if (badge) badge.classList.add('hidden');
-                isVideoOtpRecorded = true;
                 recBtn.innerText = "Recorded ✓";
                 document.getElementById('videoCamStatusText').innerText = "✓ Video OTP verified successfully!";
                 if (otpMediaStream) { otpMediaStream.getTracks().forEach(t => t.stop()); otpMediaStream = null; }
@@ -1005,10 +1003,9 @@
             const placeStatusEl = document.getElementById('regPlaceStatus');
             const vibeEl = document.getElementById('regVibe');
 
-            if (!nameEl || !nameEl.value.trim()) { 
-                showToast("Error", "Please enter your name and age.", "⚠️"); 
-                return; 
-            }
+            let userName = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : "Suresh Manikanta, 27";
+            let userLoc = locationEl ? locationEl.value : "Koramangala";
+            let userVibe = `${placeStatusEl ? placeStatusEl.value : 'Have Private Space'} • ${vibeEl ? vibeEl.value : 'Drinks & Deep Chat'}`;
 
             if (uploadedPhotoUrls.length === 0) {
                 uploadedPhotoUrls.push("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80");
@@ -1016,9 +1013,9 @@
 
             userProfile = {
                 id: 'USR_' + Date.now(),
-                name: nameEl.value.trim(),
-                location: locationEl ? locationEl.value : "Koramangala",
-                vibe: `${placeStatusEl ? placeStatusEl.value : 'Have Private Space'} • ${vibeEl ? vibeEl.value : 'Drinks & Deep Chat'}`,
+                name: userName,
+                location: userLoc,
+                vibe: userVibe,
                 photos: uploadedPhotoUrls.slice(0, 4),
                 status: 'pending',
                 verificationOtp: currentGeneratedOtp,
