@@ -1,1119 +1,302 @@
+
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Exchange Ur Needs — Bengaluru Elite</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #02040a; color: #f9fafb; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .glass-panel { background: linear-gradient(135deg, rgba(13, 17, 28, 0.94), rgba(3, 7, 18, 0.99)); backdrop-filter: blur(24px); border: 1px solid rgba(236, 72, 153, 0.28); }
-        .neon-glow { box-shadow: 0 0 45px rgba(236, 72, 153, 0.25); }
-        .neon-glow-purple { box-shadow: 0 0 45px rgba(168, 85, 247, 0.25); }
-        @keyframes pulse-glow { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.04); opacity: 1; } }
-        .pulse-live { animation: pulse-glow 2.5s infinite ease-in-out; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10131d">
+<title>Exchange Ur Needs</title>
+<style>
+:root{--bg:#0d1018;--panel:#171e2c;--gold:#e7bd70;--text:#f4f6fb;--muted:#aab3c5;--line:#30394d;--green:#55d6a2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1100px;margin:auto;padding:18px}
+header{background:#151b29;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{font-size:19px;font-weight:bold}
+.brand span,h1 span{color:var(--gold)}
+.btn{padding:12px 17px;border:0;border-radius:10px;font-weight:bold}
+.gold{background:var(--gold);color:#17130b}
+.dark{background:#283246;color:white;border:1px solid var(--line)}
+.hero{padding:65px 18px;display:grid;grid-template-columns:1fr 1fr;gap:25px;align-items:center}
+h1{font-size:clamp(38px,6vw,60px);margin:15px 0}
+p{color:var(--muted);line-height:1.65}
+.hero-card,.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+.hero-card{background:linear-gradient(140deg,#303b55,#171e2c)}
+.section{padding:35px 18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.card h3{color:var(--gold)}
+input,textarea,select{width:100%;padding:13px;margin:7px 0 14px;background:#0d121d;border:1px solid var(--line);border-radius:9px;color:white}
+label{font-size:14px;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.tab{padding:10px 13px;background:#202a3b;color:white;border:1px solid var(--line);border-radius:9px}
+.tab.active{background:var(--gold);color:#17130b}
+.hidden{display:none!important}
+.notice{background:#3a3020;padding:13px;border-radius:10px;color:#f4dfb7;font-size:13px;line-height:1.6;margin:12px 0}
+.status{color:var(--green);font-weight:bold}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.member{padding:13px;margin:10px 0;background:#101725;border:1px solid var(--line);border-radius:12px}
+footer{border-top:1px solid var(--line);margin-top:30px;color:var(--muted);font-size:13px}
+.modal{position:fixed;inset:0;background:#000c;display:grid;place-items:center;padding:15px;z-index:10}
+.modal-box{background:var(--panel);padding:22px;border:1px solid var(--line);border-radius:18px;width:min(440px,100%)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gold);color:#17130b;padding:13px 18px;border-radius:10px;z-index:20;font-weight:bold}
+@media(max-width:700px){.hero{grid-template-columns:1fr;padding-top:40px}.grid{grid-template-columns:1fr}.wrap{padding:14px}h1{font-size:42px}}
+</style>
 </head>
-<body class="bg-[#02040a] text-gray-100 flex justify-center items-center min-h-screen m-0 p-0">
-
-    <div id="app" class="w-full max-w-md h-[100vh] sm:h-[900px] bg-[#02040a] sm:rounded-[38px] sm:border sm:border-gray-800 flex flex-col relative overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.95)]">
-        
-        <!-- Ambient Atmosphere Lighting -->
-        <div class="absolute -top-36 -left-36 w-72 h-72 bg-pink-600/30 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
-        <div class="absolute top-1/3 -right-36 w-72 h-72 bg-purple-600/30 rounded-full blur-[100px] pointer-events-none animate-pulse" style="animation-delay: 1.5s;"></div>
-        <div class="absolute -bottom-36 left-1/4 w-72 h-72 bg-indigo-600/25 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <!-- Custom Toast -->
-        <div id="customToast" class="absolute top-4 left-4 right-4 z-50 transform -translate-y-36 transition-transform duration-300 pointer-events-none">
-            <div class="glass-panel bg-gray-900/95 border-pink-500/60 p-4 rounded-2xl shadow-2xl flex items-center gap-3">
-                <span id="toastIcon" class="text-2xl">🔥</span>
-                <div class="flex-1">
-                    <p id="toastTitle" class="text-xs font-extrabold text-white">Elite Notification</p>
-                    <p id="toastDesc" class="text-[11px] text-gray-300">Action completed successfully.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Header -->
-        <header class="px-5 py-4 glass-panel border-b border-gray-800/80 flex items-center justify-between z-20">
-            <div>
-                <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-pink-400 via-purple-300 to-indigo-300 bg-clip-text text-transparent flex items-center gap-1.5">
-                    💎 Exchange Ur Needs <span class="text-[9px] bg-pink-600/30 text-pink-300 px-2 py-0.5 rounded-full border border-pink-500/40 font-bold">ELITE BLR</span>
-                </h1>
-                <p class="text-[10px] text-gray-400 font-medium">Real Meets • Private Spaces • Verified Matches</p>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="openPricingModal()" class="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold shadow-lg shadow-pink-600/30 hover:scale-105 transition-transform flex items-center gap-1">
-                    💎 <span id="headerDiamonds">10</span>
-                </button>
-                <button onclick="toggleAdminMode()" id="adminToggleBtn" class="text-xs px-3 py-1.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60 font-semibold hover:bg-purple-900/80 transition-all">
-                    ⚙️ Admin
-                </button>
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main id="mainContent" class="flex-1 overflow-y-auto hide-scrollbar pb-28 z-10">
-            
-            <!-- DISCOVER TAB -->
-            <div id="tabDiscover" class="p-4 space-y-4">
-                
-                <!-- Neighborhood Filters -->
-                <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1 text-xs">
-                    <button onclick="filterLocation('all', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold whitespace-nowrap shadow-lg shadow-pink-600/20">All BLR</button>
-                    <button onclick="filterLocation('Koramangala', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">Koramangala</button>
-                    <button onclick="filterLocation('Indiranagar', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">Indiranagar</button>
-                    <button onclick="filterLocation('HSR Layout', event)" class="loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">HSR Layout</button>
-                    <button onclick="filterLocation('MG Road', event)" class="loc-pill px-4 py-1.5 rounded-full bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium">MG Road</button>
-                </div>
-
-                <!-- Feed Cards with Rich Media -->
-                <div id="approvedProfilesList" class="space-y-5">
-                    
-                    <!-- Profile Card 1 -->
-                    <div class="profile-card glass-panel rounded-[30px] overflow-hidden shadow-2xl relative border border-gray-800/90" data-location="Koramangala" id="demoCard1">
-                        <div class="relative h-[460px] bg-gray-950 overflow-hidden">
-                            <div class="w-full h-full relative cursor-pointer" onclick="cyclePhotoSlide('demoCard1', 3)">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85" alt="Pooja" class="w-full h-full object-cover profile-slide-demoCard1 block">
-                                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=85" alt="Pooja 2" class="w-full h-full object-cover profile-slide-demoCard1 hidden">
-                                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=85" alt="Pooja 3" class="w-full h-full object-cover profile-slide-demoCard1 hidden">
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#02040a] via-black/25 to-black/40 pointer-events-none"></div>
-                            
-                            <!-- Indicators -->
-                            <div class="absolute top-3 left-3 right-3 flex gap-1.5 z-10 px-1 pointer-events-none">
-                                <div class="h-1 rounded-full flex-1 bg-white/90 photo-dot-demoCard1"></div>
-                                <div class="h-1 rounded-full flex-1 bg-white/40 photo-dot-demoCard1"></div>
-                                <div class="h-1 rounded-full flex-1 bg-white/40 photo-dot-demoCard1"></div>
-                            </div>
-
-                            <!-- Badges -->
-                            <div class="absolute top-7 left-3 flex items-center gap-1.5">
-                                <span class="bg-emerald-950/95 backdrop-blur-md text-emerald-300 px-3.5 py-1 rounded-full text-[10px] font-extrabold border border-emerald-500/50 flex items-center gap-1.5 shadow-lg">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Cam Verified ✓
-                                </span>
-                            </div>
-                            <button onclick="openCurrentCardPhoto('demoCard1', 'Pooja, 24')" class="absolute top-7 right-3 bg-black/60 hover:bg-black/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold border border-white/20 text-white z-20">
-                                🔍 Zoom Photo
-                            </button>
-                            
-                            <!-- Info -->
-                            <div class="absolute bottom-4 left-4 right-4 pointer-events-none space-y-1.5">
-                                <div class="flex items-center justify-between">
-                                    <h2 class="text-2xl font-extrabold text-white tracking-tight drop-shadow-md">Pooja, 24</h2>
-                                    <span class="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-3 py-0.5 rounded-full text-[10px] font-extrabold shadow-md">🔥 Real Meet Hot Pick</span>
-                                </div>
-                                <p class="text-xs text-gray-200 font-semibold drop-shadow flex items-center gap-1">📍 Koramangala, Bengaluru • ⚡ Active Now</p>
-                                
-                                <div class="pt-1 flex gap-1.5 flex-wrap">
-                                    <span class="bg-purple-950/90 border border-purple-700/60 text-purple-200 text-[10px] px-3 py-1 rounded-xl font-bold">🏠 Have Private Space</span>
-                                    <span class="bg-pink-950/90 border border-pink-700/60 text-pink-200 text-[10px] px-3 py-1 rounded-xl font-bold">🍷 Drinks & Deep Chat in Private</span>
-                                    <span class="bg-black/70 border border-white/10 text-gray-300 text-[10px] px-2.5 py-1 rounded-xl photo-counter-demoCard1">📷 Tap photo (1/3)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 space-y-3.5">
-                            <div class="bg-gray-950/95 p-3.5 rounded-2xl border border-gray-800/80 space-y-1">
-                                <p class="text-[10px] uppercase tracking-wider text-pink-400 font-extrabold">What I'm Looking For Tonight</p>
-                                <p class="text-xs text-gray-200 font-medium leading-relaxed">"Looking for a gentleman with good vibes to chill at my private apartment in Koramangala. Let's make it memorable with drinks and good conversation."</p>
-                            </div>
-                            <button onclick="openApproachModal('Pooja, 24', 'Koramangala', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85')" class="w-full py-3.5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 rounded-2xl font-extrabold text-xs shadow-xl shadow-pink-600/30 text-white hover:opacity-95 transition-all">
-                                Send Approach & Connect (Uses 1 Diamond 💎)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Profile Card 2 -->
-                    <div class="profile-card glass-panel rounded-[30px] overflow-hidden shadow-2xl relative border border-gray-800/90" data-location="Indiranagar" id="demoCard2">
-                        <div class="relative h-[460px] bg-gray-950 overflow-hidden">
-                            <div class="w-full h-full relative cursor-pointer" onclick="cyclePhotoSlide('demoCard2', 3)">
-                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=85" alt="Ananya" class="w-full h-full object-cover profile-slide-demoCard2 block">
-                                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=85" alt="Ananya 2" class="w-full h-full object-cover profile-slide-demoCard2 hidden">
-                                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=85" alt="Ananya 3" class="w-full h-full object-cover profile-slide-demoCard2 hidden">
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#02040a] via-black/25 to-black/40 pointer-events-none"></div>
-                            
-                            <div class="absolute top-3 left-3 right-3 flex gap-1.5 z-10 px-1 pointer-events-none">
-                                <div class="h-1 rounded-full flex-1 bg-white/90 photo-dot-demoCard2"></div>
-                                <div class="h-1 rounded-full flex-1 bg-white/40 photo-dot-demoCard2"></div>
-                                <div class="h-1 rounded-full flex-1 bg-white/40 photo-dot-demoCard2"></div>
-                            </div>
-
-                            <div class="absolute top-7 left-3">
-                                <span class="bg-emerald-950/95 backdrop-blur-md text-emerald-300 px-3.5 py-1 rounded-full text-[10px] font-extrabold border border-emerald-500/50 flex items-center gap-1.5 shadow-lg">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Cam Verified ✓
-                                </span>
-                            </div>
-                            <button onclick="openCurrentCardPhoto('demoCard2', 'Ananya, 26')" class="absolute top-7 right-3 bg-black/60 hover:bg-black/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold border border-white/20 text-white z-20">
-                                🔍 Zoom Photo
-                            </button>
-                            
-                            <div class="absolute bottom-4 left-4 right-4 pointer-events-none space-y-1.5">
-                                <div class="flex items-center justify-between">
-                                    <h2 class="text-2xl font-extrabold text-white tracking-tight drop-shadow-md">Ananya, 26</h2>
-                                    <span class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-0.5 rounded-full text-[10px] font-extrabold shadow-md">✨ Luxury Date</span>
-                                </div>
-                                <p class="text-xs text-gray-200 font-semibold drop-shadow flex items-center gap-1">📍 Indiranagar, Bengaluru • ⚡ Tonight</p>
-                                
-                                <div class="pt-1 flex gap-1.5 flex-wrap">
-                                    <span class="bg-amber-950/90 border border-amber-700/60 text-amber-200 text-[10px] px-3 py-1 rounded-xl font-bold">🏨 Need Place / Hotel</span>
-                                    <span class="bg-purple-950/90 border border-purple-700/60 text-purple-200 text-[10px] px-3 py-1 rounded-xl font-bold">🍸 Pub Hopping & Late Night Fun</span>
-                                    <span class="bg-black/70 border border-white/10 text-gray-300 text-[10px] px-2.5 py-1 rounded-xl photo-counter-demoCard2">📷 Tap photo (1/3)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 space-y-3.5">
-                            <div class="bg-gray-950/95 p-3.5 rounded-2xl border border-gray-800/80 space-y-1">
-                                <p class="text-[10px] uppercase tracking-wider text-purple-400 font-extrabold">What I'm Looking For Tonight</p>
-                                <p class="text-xs text-gray-200 font-medium leading-relaxed">"Let's grab drinks around 100ft Road Indiranagar and see where the night takes us. Looking for a generous partner for luxury hotel date."</p>
-                            </div>
-                            <button onclick="openApproachModal('Ananya, 26', 'Indiranagar', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=85')" class="w-full py-3.5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 rounded-2xl font-extrabold text-xs shadow-xl shadow-pink-600/30 text-white hover:opacity-95 transition-all">
-                                Send Approach & Connect (Uses 1 Diamond 💎)
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- ADMIN TAB -->
-            <div id="tabAdmin" class="p-4 space-y-4 hidden">
-                <div class="glass-panel border-purple-500/40 p-4 rounded-3xl space-y-2 neon-glow-purple">
-                    <h2 class="text-xs font-extrabold text-purple-300 uppercase tracking-wider">🛡️ Elite Admin & Verification Center</h2>
-                    <p class="text-[11px] text-gray-300">Configure direct UPI merchant settings and review pending user registrations & video OTP verifications.</p>
-                </div>
-
-                <div class="grid grid-cols-3 gap-1 bg-gray-950 p-1 rounded-2xl border border-gray-800 text-xs">
-                    <button onclick="switchAdminSubTab('finance')" id="adminTabFinance" class="py-2.5 rounded-xl bg-purple-950 text-purple-300 font-bold transition-all">UPI Settings</button>
-                    <button onclick="switchAdminSubTab('approvals')" id="adminTabApprovals" class="py-2.5 rounded-xl text-gray-400 font-medium transition-all">Approvals</button>
-                    <button onclick="switchAdminSubTab('chats')" id="adminTabChats" class="py-2.5 rounded-xl text-gray-400 font-medium transition-all">Chats</button>
-                </div>
-
-                <!-- UPI Settings Sub-tab -->
-                <div id="adminSubFinance" class="space-y-3">
-                    <div class="glass-panel rounded-3xl p-4 space-y-3 text-xs">
-                        <h3 class="font-bold text-pink-400 text-sm">💳 Direct UPI Integration</h3>
-                        <div>
-                            <label class="text-gray-400 block mb-1">Your Business UPI ID (GPay/PhonePe/Paytm)</label>
-                            <input type="text" id="adminUpiInput" placeholder="e.g. yourname@okaxis" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white font-mono">
-                        </div>
-                        <div>
-                            <label class="text-gray-400 block mb-1">Merchant Business Name</label>
-                            <input type="text" id="adminMerchantInput" value="ExchangeUrNeeds" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white">
-                        </div>
-                        <button onclick="saveUpiSettings()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 font-bold rounded-2xl text-white shadow-lg">
-                            Save UPI Credentials Permanently
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Pending Approvals & Video OTP Sub-tab -->
-                <div id="adminSubApprovals" class="space-y-3 hidden">
-                    <div class="glass-panel rounded-3xl p-4 space-y-3 text-xs">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-bold text-amber-400 text-sm">⏳ Pending Registrations & Video OTP</h3>
-                            <button onclick="renderAdminApprovals()" class="px-2.5 py-1 bg-gray-800 rounded-lg text-[10px]">Refresh</button>
-                        </div>
-                        <div id="adminApprovalsList" class="space-y-3">
-                            <div class="text-center py-6 text-gray-500 text-[11px] bg-gray-950 rounded-2xl border border-gray-800">
-                                No pending registrations right now.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Chat Logs Sub-tab -->
-                <div id="adminSubChats" class="space-y-3 hidden">
-                    <div class="glass-panel rounded-3xl p-4 space-y-3 text-xs">
-                        <h3 class="font-bold text-purple-300 text-sm">💬 Active User Conversations</h3>
-                        <div class="text-center py-8 text-gray-500 text-[11px] bg-gray-950 rounded-2xl border border-gray-800">
-                            No chats active right now.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MATCHES TAB -->
-            <div id="tabMatches" class="p-4 space-y-3 hidden">
-                <div id="incomingRequestsSection" class="space-y-3"></div>
-
-                <div id="matchesEmptyState" class="text-center py-20 space-y-3 glass-panel rounded-3xl border border-gray-800">
-                    <span class="text-4xl">💬</span>
-                    <h3 class="text-sm font-bold text-gray-200">No active Elite chats yet</h3>
-                    <p class="text-[11px] text-gray-400 max-w-xs mx-auto">Send an approach request in Discover or accept pending matches to unlock encrypted live chat and calling.</p>
-                </div>
-
-                <!-- Chat Room Interface -->
-                <div id="activeChatBox" class="hidden glass-panel rounded-3xl overflow-hidden flex flex-col h-[640px] border border-gray-800 shadow-2xl">
-                    <div class="px-4 py-3 bg-gray-900/95 border-b border-gray-800 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <img id="activeChatAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-10 h-10 rounded-full object-cover border-2 border-pink-500">
-                                <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-gray-900 rounded-full"></span>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-xs text-white" id="activeChatName">Pooja, 24</h4>
-                                <p class="text-[10px] text-emerald-400 font-medium">● Verified Elite • Online</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="startVoiceCall()" class="p-2.5 bg-gray-950 hover:bg-gray-800 border border-gray-800 rounded-xl text-xs text-pink-400" title="Voice Call">📞</button>
-                            <button onclick="startVideoCall()" class="p-2.5 bg-gray-950 hover:bg-gray-800 border border-gray-800 rounded-xl text-xs text-purple-400" title="Video Call">📹</button>
-                            <button onclick="shareLiveLocation()" class="p-2.5 bg-gray-950 hover:bg-gray-800 border border-gray-800 rounded-xl text-xs text-emerald-400" title="Live Location">📍</button>
-                        </div>
-                    </div>
-
-                    <div id="chatMessagesList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#02040a] text-xs">
-                        <div class="text-center my-2"><span class="bg-gray-900 text-gray-400 text-[10px] px-3 py-1 rounded-full border border-gray-800">🔒 Secure End-to-End Encrypted Elite Connection</span></div>
-                        <div class="bg-gray-900 text-gray-200 p-3 rounded-2xl max-w-[82%] border border-gray-800">Hey! Let's connect at Koramangala this evening. 👋</div>
-                    </div>
-
-                    <div class="p-3 bg-gray-900/95 border-t border-gray-800 flex items-center gap-2">
-                        <input type="text" id="chatInputMsg" placeholder="Type a message..." class="flex-1 bg-gray-950 border border-gray-800 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-pink-500">
-                        <button onclick="sendChatMessage()" class="px-5 py-3 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl text-xs font-bold shadow-lg">Send</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PROFILE TAB -->
-            <div id="tabProfile" class="p-4 space-y-4 hidden">
-                <div class="glass-panel rounded-[32px] p-6 text-center space-y-4 shadow-2xl">
-                    <div class="w-24 h-24 rounded-full bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 p-1 mx-auto flex items-center justify-center shadow-xl overflow-hidden">
-                        <img id="profileDisplayImg" src="" class="w-full h-full object-cover rounded-full hidden">
-                        <span id="profileDisplayInitials" class="text-white text-2xl font-bold">SM</span>
-                    </div>
-                    <div>
-                        <h2 id="profileDisplayName" class="text-lg font-extrabold text-white">Suresh Manikanta, 27</h2>
-                        <p class="text-xs text-pink-400 font-semibold mt-0.5">📍 Bengaluru Elite Member</p>
-                    </div>
-                    <div class="bg-gray-950/90 p-3.5 rounded-2xl border border-gray-800 text-left space-y-1">
-                        <p class="text-[10px] text-gray-400 font-bold uppercase">Membership Status</p>
-                        <p id="membershipStatusBadge" class="text-xs text-emerald-400 font-bold">✓ Free Tier (10 Diamonds)</p>
-                    </div>
-                    
-                    <div class="pt-2 space-y-2.5">
-                        <button onclick="openSignupModal()" class="w-full py-3.5 bg-gray-900 border border-gray-800 rounded-2xl font-bold text-xs text-gray-200 hover:bg-gray-800 transition-all">
-                            ✏️ Edit Profile & Vibe
-                        </button>
-                        <button onclick="logoutUser()" class="w-full py-3.5 bg-gray-900 border border-gray-800 rounded-2xl font-bold text-xs text-amber-400 hover:bg-gray-800 transition-all">
-                            🚪 Logout Account
-                        </button>
-                        <button onclick="deleteAccount()" class="w-full py-3.5 bg-red-950/40 border border-red-900/60 rounded-2xl font-bold text-xs text-red-400 hover:bg-red-900/40 transition-all">
-                            🗑️ Delete Account Permanently
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Call Overlay -->
-        <div id="callOverlayModal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 hidden flex flex-col items-center justify-between p-8">
-            <div class="text-center pt-16 space-y-3">
-                <div class="w-28 h-28 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 p-1 mx-auto relative pulse-live">
-                    <img id="callOverlayAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" class="w-full h-full rounded-full object-cover">
-                </div>
-                <h3 id="callOverlayName" class="text-xl font-bold text-white pt-2">Pooja, 24</h3>
-                <p id="callOverlayStatus" class="text-xs text-pink-400 font-medium animate-pulse">Establishing secure Elite connection...</p>
-            </div>
-            <div class="w-full max-w-xs flex justify-around pb-12">
-                <button onclick="endCall()" class="w-16 h-16 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center text-xl shadow-2xl transition-transform hover:scale-110">📞</button>
-                <button onclick="endCall()" class="w-16 h-16 rounded-full bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-xl shadow-2xl transition-transform hover:scale-110">💬</button>
-            </div>
-        </div>
-
-        <!-- Approach Modal -->
-        <div id="approachModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div class="glass-panel w-full max-w-sm rounded-[32px] p-6 space-y-4 neon-glow">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-base font-extrabold text-pink-400">✨ Send Approach Request</h3>
-                    <button onclick="closeApproachModal()" class="text-gray-400 text-lg font-bold">✕</button>
-                </div>
-                <p id="approachLimitNotice" class="text-xs text-gray-300">Spends <strong class="text-pink-400">1 Diamond 💎</strong>. (Max 2 requests per day if rejected).</p>
-                <div>
-                    <label class="text-xs text-gray-400 block mb-1.5 font-bold">Your Custom Message</label>
-                    <textarea id="approachMsgInput" class="w-full bg-gray-950 border border-gray-800 rounded-2xl p-3.5 text-white text-xs h-28 focus:outline-none focus:border-pink-500" placeholder="Hey! Loved your vibe. Let's hang out at Koramangala this evening?"></textarea>
-                </div>
-                <button onclick="confirmSendApproach()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-extrabold text-xs text-white shadow-lg">
-                    Send Elite Request (-1 Diamond)
-                </button>
-            </div>
-        </div>
-
-        <!-- Pricing Modal -->
-        <div id="pricingModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div class="glass-panel w-full max-w-md rounded-[32px] p-6 space-y-4 max-h-[90vh] overflow-y-auto neon-glow">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h3 id="pricingModalTitle" class="text-base font-extrabold text-pink-400">💎 Choose Membership Pass</h3>
-                        <p id="pricingModalSub" class="text-[11px] text-gray-400">Recharge diamonds instantly via direct UPI</p>
-                    </div>
-                    <button onclick="closePricingModal()" class="text-gray-400 text-lg font-bold">✕</button>
-                </div>
-                <div class="space-y-3 text-xs">
-                    <div onclick="selectPlan('1 Day Elite Pass', 49, 15)" class="bg-gray-950 border border-gray-800 hover:border-pink-500 p-4 rounded-2xl cursor-pointer transition-all flex justify-between items-center">
-                        <div><p class="font-bold text-gray-200">1 Day Elite Pass</p><p class="text-[10px] text-gray-400">15 Send Requests & Live Chat</p></div>
-                        <div class="text-right"><p class="font-extrabold text-pink-400 text-sm">₹49</p><span class="text-[9px] bg-pink-950 text-pink-300 px-2.5 py-0.5 rounded-full font-bold">15 Diamonds</span></div>
-                    </div>
-                    <div onclick="selectPlan('Monthly Unlimited Elite', 449, 9999)" class="bg-gradient-to-r from-purple-950/90 to-pink-950/90 border border-pink-500 p-4 rounded-2xl cursor-pointer transition-all flex justify-between items-center shadow-lg">
-                        <div><p class="font-extrabold text-white flex items-center gap-1">👑 Monthly Unlimited Elite</p><p class="text-[10px] text-pink-200">Unlimited Requests + Priority Cam</p></div>
-                        <div class="text-right"><p class="font-extrabold text-pink-300 text-base">₹449</p><span class="text-[9px] bg-pink-600 text-white px-2.5 py-0.5 rounded-full font-extrabold">UNLIMITED</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Payment Modal -->
-        <div id="paymentModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div class="glass-panel w-full max-w-sm rounded-[32px] p-6 space-y-4 text-center neon-glow">
-                <h3 class="text-base font-extrabold text-pink-400" id="paymentModalTitle">Scan & Pay via UPI</h3>
-                <div class="bg-white p-3 rounded-2xl w-44 h-44 mx-auto flex items-center justify-center shadow-2xl">
-                    <img src="" id="upiQrImg" alt="UPI QR Code" class="w-full h-full object-contain">
-                </div>
-                <div class="bg-gray-950 p-3.5 rounded-2xl border border-gray-800 text-[11px] text-gray-300 space-y-1">
-                    <p>Payee: <strong id="displayMerchantName" class="text-white">ExchangeUrNeeds</strong></p>
-                    <p>UPI ID: <strong id="displayUpiId" class="text-pink-400 font-mono">XXXX</strong></p>
-                    <p>Exact Amount: <strong id="displayExactAmount" class="text-emerald-400 font-extrabold">₹49.00</strong></p>
-                </div>
-                <a id="directUpiAppBtn" href="#" onclick="setPaymentCallback()" target="_blank" class="block w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-2xl font-extrabold text-xs shadow-lg text-center">
-                    📲 Open GPay / PhonePe / Paytm Directly
-                </a>
-                <button onclick="simulatePaymentSuccess()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-extrabold text-xs shadow-md">✓ I Have Paid • Return & Activate</button>
-                <button onclick="closePaymentModal()" class="text-xs text-gray-400 block mx-auto pt-1">Cancel</button>
-            </div>
-        </div>
-
-        <!-- Comprehensive Signup / Login / Edit Profile Modal -->
-        <div id="signupModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="glass-panel w-full max-w-md rounded-t-[38px] sm:rounded-[38px] p-6 space-y-4 max-h-[92vh] overflow-y-auto neon-glow">
-                <div class="flex justify-between items-center">
-                    <h3 id="authModalTitle" class="text-base font-extrabold text-pink-400">✨ Create Elite Profile or Login</h3>
-                    <button onclick="closeSignupModal()" class="text-gray-400 text-lg font-bold">✕</button>
-                </div>
-
-                <div class="flex gap-2 bg-gray-950 p-1 rounded-2xl border border-gray-800 text-xs">
-                    <button onclick="switchAuthMode('login')" id="authTabLogin" class="flex-1 py-2.5 rounded-xl text-gray-400 font-medium transition-all">Login</button>
-                    <button onclick="switchAuthMode('signup')" id="authTabSignup" class="flex-1 py-2.5 rounded-xl bg-pink-600 text-white font-bold transition-all">Register Elite</button>
-                </div>
-
-                <!-- LOGIN VIEW WITH PHONE & OTP -->
-                <div id="authViewLogin" class="space-y-3.5 text-xs hidden">
-                    <div>
-                        <label class="text-gray-400 block mb-1.5 font-bold">Mobile Number (WhatsApp/SMS)</label>
-                        <div class="flex gap-2">
-                            <input type="text" value="+91" readonly class="w-16 bg-gray-900 border border-gray-800 rounded-2xl text-center text-white font-bold">
-                            <input type="tel" id="loginPhone" placeholder="9876543210" maxlength="10" class="flex-1 bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
-                        </div>
-                    </div>
-                    <div id="otpSection" class="hidden space-y-2">
-                        <label class="text-gray-400 block mb-1.5 font-bold">Enter 4-Digit OTP (Sent to Phone)</label>
-                        <input type="text" id="loginOtpInput" placeholder="1 2 3 4" maxlength="4" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-center tracking-widest text-lg text-white font-bold focus:outline-none focus:border-pink-500">
-                    </div>
-                    <button id="otpActionBtn" onclick="requestOtpLogin()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-extrabold text-sm text-white shadow-lg">Send Verification OTP</button>
-                </div>
-
-                <!-- SIGNUP / EDIT VIEW WITH REMOVABLE PHOTO PREVIEWS & LIVE VIDEO OTP -->
-                <div id="authViewSignup" class="space-y-3.5 text-xs">
-                    <div>
-                        <label class="text-gray-400 block mb-1.5 font-bold">Your Full Name & Age</label>
-                        <input type="text" id="regName" placeholder="Suresh Manikanta, 27" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-gray-400 block mb-1.5 font-bold">Neighborhood</label>
-                            <select id="regLocation" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-pink-500">
-                                <option value="Koramangala">Koramangala</option>
-                                <option value="Indiranagar">Indiranagar</option>
-                                <option value="HSR Layout">HSR Layout</option>
-                                <option value="MG Road">MG Road</option>
-                                <option value="Whitefield">Whitefield</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-gray-400 block mb-1.5 font-bold">Have a Place?</label>
-                            <select id="regPlaceStatus" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-pink-500">
-                                <option value="🏠 Have Private Space">🏠 Have Private Space</option>
-                                <option value="🏨 Need Place / Hotel">🏨 Need Place / Hotel</option>
-                                <option value="🚗 Flexible / Out">🚗 Flexible / Out</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-gray-400 block mb-1.5 font-bold">What Are You Looking For? (Relatable & Bold)</label>
-                        <select id="regVibe" class="w-full bg-gray-950 border border-gray-800 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-pink-500">
-                            <option value="🍷 Drinks & Deep Chat in Private">🍷 Drinks & Deep Chat in Private</option>
-                            <option value="🔥 Discreet Meetup & Chill">🔥 Discreet Meetup & Chill</option>
-                            <option value="🏨 Luxury Date & Hotel Hangout">🏨 Luxury Date & Hotel Hangout</option>
-                            <option value="🍸 Pub Hopping & Late Night Fun">🍸 Pub Hopping & Late Night Fun</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-gray-400 block mb-1.5 font-bold">Upload Photos (2 to 6 photos - Tap [X] to remove)</label>
-                        <input type="file" id="regPhotoInput" accept="image/*" multiple class="w-full bg-gray-950 border border-gray-800 rounded-2xl p-2 text-white" onchange="handlePhotoUpload(event)">
-                        <div id="photoPreviewGrid" class="grid grid-cols-3 gap-2 mt-2"></div>
-                    </div>
-
-                    <!-- Live Video OTP Verification Box -->
-                    <div class="bg-gray-950 p-3.5 rounded-2xl border border-gray-800 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-amber-400 font-bold flex items-center gap-1.5 text-xs">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span> Live Video OTP Verification
-                            </span>
-                        </div>
-                        <p class="text-[11px] text-zinc-300">Record a quick 5s video saying this assigned spoken code out loud:</p>
-                        <div class="bg-black border border-amber-500/40 rounded-xl p-3 text-center">
-                            <span id="assignedOtpDisplay" class="text-2xl font-extrabold tracking-[0.2em] text-amber-400">----</span>
-                        </div>
-                        <div id="videoOtpContainer" class="relative h-40 bg-black rounded-xl overflow-hidden border border-amber-500/50 flex items-center justify-center">
-                            <video id="otpWebcamVideo" autoplay playsinline muted class="w-full h-full object-cover scale-x-[-1]"></video>
-                            <div id="videoRecBadge" class="hidden absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
-                                <span class="w-1.5 h-1.5 bg-white rounded-full"></span> REC (5s)
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button id="startOtpCamBtn" type="button" onclick="initOtpCamera()" class="flex-1 py-2 bg-zinc-800 text-white rounded-xl font-bold text-[10px]">1. Start Camera</button>
-                            <button id="recordOtpVidBtn" type="button" onclick="recordVerificationVideo()" disabled class="flex-1 py-2 bg-amber-500 disabled:bg-zinc-800 text-black font-bold text-[10px]">2. Record 5s Video</button>
-                        </div>
-                        <p id="videoCamStatusText" class="text-[10px] text-gray-400">Required for Admin Approval.</p>
-                    </div>
-
-                    <button type="button" onclick="submitRegistration()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 rounded-2xl font-extrabold text-sm text-white shadow-xl">Submit Approval</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Approval Lock Screen Modal -->
-        <div id="pendingApprovalScreen" class="fixed inset-0 z-50 hidden bg-zinc-950 flex items-center justify-center p-6 text-center text-white">
-            <div class="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
-                <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-xl font-bold">⏳</div>
-                <h2 class="text-xl font-bold">Verification Under Review</h2>
-                <p class="text-sm text-zinc-400">Your profile and video OTP clip have been submitted to the admin. Once approved, your account unlocks automatically.</p>
-                <button onclick="logoutUser()" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold">Back to Home</button>
-            </div>
-        </div>
-
-        <!-- Zoom Photo Preview Modal -->
-        <div id="mediaPreviewModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex flex-col justify-between p-4">
-            <div class="flex justify-between items-center pt-2"><h3 id="previewTitle" class="font-bold text-sm text-purple-300">Elite Photo Zoom</h3><button onclick="closeMediaPreview()" class="text-gray-300 text-xl font-bold bg-gray-800 px-3.5 py-1 rounded-full">✕</button></div>
-            <div class="flex-1 flex items-center justify-center p-2 overflow-hidden" id="mediaPreviewContainer"></div>
-            <div class="text-center pb-4"><button onclick="closeMediaPreview()" class="px-6 py-2.5 bg-gray-800 text-gray-200 rounded-xl text-xs font-semibold">Close</button></div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <nav id="bottomNav" class="absolute bottom-0 left-0 right-0 glass-panel border-t border-gray-800 px-6 py-3.5 flex justify-between items-center z-20">
-            <button onclick="switchTab('Discover')" id="navDiscover" class="flex flex-col items-center gap-1 text-pink-500"><span class="text-lg">🧭</span><span class="text-[10px] font-bold">Discover</span></button>
-            <button onclick="switchTab('Matches')" id="navMatches" class="flex flex-col items-center gap-1 text-gray-400 relative"><span class="text-lg">💬</span><span class="text-[10px] font-bold">Matches</span><span id="requestBadge" class="hidden absolute top-0 right-2 w-2.5 h-2.5 bg-pink-500 rounded-full animate-ping"></span></button>
-            <button onclick="switchTab('Profile')" id="navProfile" class="flex flex-col items-center gap-1 text-gray-400"><span class="text-lg">👤</span><span class="text-[10px] font-bold">Profile</span></button>
-        </nav>
-
-    </div>
-
-    <script>
-        let uploadedPhotoUrls = [];
-        let currentTargetProfile = {};
-        let selectedPlanInfo = {};
-        
-        let otpMediaStream = null;
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let recordedVideoBase64 = "Simulated Verified Clip";
-        let currentGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-
-        let userDiamonds = parseInt(localStorage.getItem('eun_diamonds') || "10");
-        let activePlanName = localStorage.getItem('eun_active_plan') || "Free Tier";
-        let merchantUpiId = localStorage.getItem('eun_upi_id') || "";
-        let merchantName = localStorage.getItem('eun_merchant_name') || "ExchangeUrNeeds";
-
-        let pendingRequests = JSON.parse(localStorage.getItem('eun_pending_requests') || "[]");
-        let activeMatch = JSON.parse(localStorage.getItem('eun_active_match') || "null");
-        let dailyAttempts = JSON.parse(localStorage.getItem('eun_daily_attempts') || "{}");
-        let userProfile = JSON.parse(localStorage.getItem('eun_user_profile') || "null");
-        let allUsersList = JSON.parse(localStorage.getItem('eyn_users') || "[]");
-
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('adminUpiInput').value = merchantUpiId;
-            document.getElementById('adminMerchantInput').value = merchantName;
-            document.getElementById('assignedOtpDisplay').innerText = currentGeneratedOtp;
-            updateDiamondDisplay();
-            renderIncomingRequests();
-            renderActiveMatchState();
-            renderUserProfileUI();
-            renderAdminApprovals();
-
-            if (userProfile) {
-                if (userProfile.status === 'pending') {
-                    document.getElementById('pendingApprovalScreen').classList.remove('hidden');
-                } else if (userProfile.status !== 'approved' && !userProfile.isAdmin) {
-                    openSignupModal();
-                }
-            } else {
-                openSignupModal();
-            }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('payment') === 'success') {
-                const pName = localStorage.getItem('pending_plan_name') || "Pass";
-                const pDiamonds = parseInt(localStorage.getItem('pending_diamonds') || "15");
-                userDiamonds += pDiamonds;
-                activePlanName = pName;
-                localStorage.setItem('eun_diamonds', userDiamonds);
-                localStorage.setItem('eun_active_plan', activePlanName);
-                updateDiamondDisplay();
-                showToast("🎉 Elite Payment Successful!", `${pName} activated with ${pDiamonds} Diamonds.`);
-                window.history.replaceState({}, document.title, window.location.pathname);
-                switchTab('Discover');
-            }
-        });
-
-        function showToast(title, desc, icon = "🔥") {
-            const toast = document.getElementById('customToast');
-            document.getElementById('toastTitle').innerText = title;
-            document.getElementById('toastDesc').innerText = desc;
-            document.getElementById('toastIcon').innerText = icon;
-            toast.style.transform = 'translateY(0)';
-            setTimeout(() => { toast.style.transform = 'translateY(-130px)'; }, 3800);
-        }
-
-        function updateDiamondDisplay() {
-            document.getElementById('headerDiamonds').innerText = userDiamonds > 9000 ? '∞' : userDiamonds;
-            document.getElementById('membershipStatusBadge').innerText = `👑 Active Plan: ${activePlanName} (${userDiamonds > 9000 ? 'Unlimited' : userDiamonds + ' Diamonds left'})`;
-        }
-
-        function toggleAdminMode() {
-            const isAdm = !document.getElementById('tabAdmin').classList.contains('hidden');
-            if (isAdm) {
-                document.getElementById('tabAdmin').classList.add('hidden');
-                document.getElementById('tabDiscover').classList.remove('hidden');
-                document.getElementById('bottomNav').classList.remove('hidden');
-                document.getElementById('adminToggleBtn').innerHTML = "⚙️ Admin";
-                switchTab('Discover');
-            } else {
-                ['Discover', 'Matches', 'Profile'].forEach(t => document.getElementById('tab' + t).classList.add('hidden'));
-                document.getElementById('tabAdmin').classList.remove('hidden');
-                document.getElementById('bottomNav').classList.add('hidden');
-                document.getElementById('adminToggleBtn').innerHTML = "👤 Exit";
-                renderAdminApprovals();
-            }
-        }
-
-        function switchAdminSubTab(subTab) {
-            ['finance', 'approvals', 'chats'].forEach(t => {
-                document.getElementById('adminSub' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden');
-                document.getElementById('adminTab' + t.charAt(0).toUpperCase() + t.slice(1)).className = "py-2.5 rounded-xl text-gray-400 font-medium transition-all";
-            });
-            document.getElementById('adminSub' + subTab.charAt(0).toUpperCase() + subTab.slice(1)).classList.remove('hidden');
-            document.getElementById('adminTab' + subTab.charAt(0).toUpperCase() + subTab.slice(1)).className = "py-2.5 rounded-xl bg-purple-950 text-purple-300 font-bold transition-all";
-        }
-
-        function saveUpiSettings() {
-            merchantUpiId = document.getElementById('adminUpiInput').value.trim();
-            merchantName = document.getElementById('adminMerchantInput').value.trim() || "ExchangeUrNeeds";
-            localStorage.setItem('eun_upi_id', merchantUpiId);
-            localStorage.setItem('eun_merchant_name', merchantName);
-            showToast("Saved!", "UPI payment credentials saved successfully.", "💳");
-        }
-
-        function openPricingModal(t, s) {
-            if (t) { document.getElementById('pricingModalTitle').innerText = t; document.getElementById('pricingModalSub').innerText = s; }
-            document.getElementById('pricingModal').classList.remove('hidden');
-        }
-        function closePricingModal() { document.getElementById('pricingModal').classList.add('hidden'); }
-
-        function selectPlan(name, amount, diamonds) {
-            if (!merchantUpiId) { closePricingModal(); showToast("Error", "Please save your UPI ID in Admin settings first.", "⚠️"); return; }
-            selectedPlanInfo = { name, amount, diamonds };
-            localStorage.setItem('pending_plan_name', name);
-            localStorage.setItem('pending_diamonds', diamonds);
-            closePricingModal();
-
-            let maskedUpi = merchantUpiId.includes('@') ? 'XXXXXXXX' + merchantUpiId.split('@')[0].slice(-4) + '@' + merchantUpiId.split('@')[1] : merchantUpiId;
-            document.getElementById('paymentModalTitle').innerText = `Pay ₹${amount} for ${name}`;
-            document.getElementById('displayMerchantName').innerText = merchantName;
-            document.getElementById('displayUpiId').innerText = maskedUpi;
-            document.getElementById('displayExactAmount').innerText = `₹${Number(amount).toFixed(2)}`;
-
-            const upiLink = `upi://pay?pa=${encodeURIComponent(merchantUpiId)}&pn=${encodeURIComponent(merchantName)}&am=${Number(amount).toFixed(2)}&cu=INR&tn=${encodeURIComponent(name)}`;
-            document.getElementById('directUpiAppBtn').href = upiLink;
-            document.getElementById('upiQrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
-            document.getElementById('paymentModal').classList.remove('hidden');
-        }
-
-        function setPaymentCallback() {
-            const cb = window.location.href.split('?')[0] + '?payment=success';
-            const btn = document.getElementById('directUpiAppBtn');
-            if (!btn.href.includes('&url=')) btn.href += `&url=${encodeURIComponent(cb)}`;
-        }
-        function closePaymentModal() { document.getElementById('paymentModal').classList.add('hidden'); }
-        function simulatePaymentSuccess() {
-            closePaymentModal();
-            userDiamonds += selectedPlanInfo.diamonds;
-            activePlanName = selectedPlanInfo.name;
-            localStorage.setItem('eun_diamonds', userDiamonds);
-            localStorage.setItem('eun_active_plan', activePlanName);
-            updateDiamondDisplay();
-            switchTab('Discover');
-            showToast("Success!", `${selectedPlanInfo.name} activated.`, "✓");
-        }
-
-        function openApproachModal(name, location, photoUrl) {
-            let attempts = dailyAttempts[name] || 0;
-            if (attempts >= 2) {
-                showToast("Limit Reached", "Max 2 requests per day for this user after rejection.", "⚠️");
-                return;
-            }
-            if (userDiamonds <= 0) {
-                openPricingModal("💎 Out of Diamonds!", "Recharge now to keep sending requests!");
-                return;
-            }
-            currentTargetProfile = { name, location, photoUrl };
-            document.getElementById('approachLimitNotice').innerHTML = `Spends <strong class="text-pink-400">1 Diamond 💎</strong>. (Attempt ${attempts + 1} of 2 allowed today).`;
-            document.getElementById('approachMsgInput').value = `Hey ${name.split(',')[0]}! Loved your vibe. Let's connect in ${location}!`;
-            document.getElementById('approachModal').classList.remove('hidden');
-        }
-
-        function closeApproachModal() { document.getElementById('approachModal').classList.add('hidden'); }
-
-        function confirmSendApproach() {
-            const msg = document.getElementById('approachMsgInput').value.trim();
-            if (!msg) { showToast("Error", "Please write a message.", "⚠️"); return; }
-
-            if (userDiamonds <= 0) {
-                closeApproachModal();
-                openPricingModal("💎 Out of Diamonds!", "Your diamonds are finished. Recharge to continue!");
-                return;
-            }
-
-            if (userDiamonds < 9000) { userDiamonds--; localStorage.setItem('eun_diamonds', userDiamonds); updateDiamondDisplay(); }
-
-            const senderName = userProfile ? userProfile.name : "Suresh Manikanta, 27";
-            const senderPhoto = (userProfile && userProfile.photos && userProfile.photos.length > 0) ? userProfile.photos[0] : "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80";
-
-            const newReq = {
-                id: Date.now(),
-                senderName: senderName,
-                senderPhoto: senderPhoto,
-                location: currentTargetProfile.location,
-                message: msg,
-                targetName: currentTargetProfile.name
-            };
-
-            pendingRequests.push(newReq);
-            localStorage.setItem('eun_pending_requests', JSON.stringify(pendingRequests));
-            closeApproachModal();
-            renderIncomingRequests();
-            showToast("Request Sent!", "Approach request sent successfully (-1 Diamond).", "✨");
-            switchTab('Matches');
-        }
-
-        function renderIncomingRequests() {
-            const container = document.getElementById('incomingRequestsSection');
-            const badge = document.getElementById('requestBadge');
-            container.innerHTML = '';
-            if (pendingRequests.length === 0) { badge.classList.add('hidden'); return; }
-            badge.classList.remove('hidden');
-
-            pendingRequests.forEach(req => {
-                container.innerHTML += `
-                    <div class="glass-panel rounded-3xl p-4 space-y-3 border border-pink-500/40 neon-glow" id="req_${req.id}">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <img src="${req.senderPhoto}" class="w-12 h-12 rounded-full object-cover border-2 border-pink-500">
-                                <div><h4 class="font-bold text-sm text-white">${req.senderName}</h4><p class="text-[10px] text-pink-400">📍 Wants to connect in ${req.location}</p></div>
-                            </div>
-                            <span class="text-[9px] bg-pink-950 text-pink-300 px-2.5 py-0.5 rounded-full font-bold">New Elite Request</span>
-                        </div>
-                        <div class="bg-gray-950 p-3 rounded-2xl border border-gray-800 text-xs text-gray-200">"${req.message}"</div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="acceptRequest(${req.id})" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold text-xs shadow-md transition-all">✓ Accept & Chat</button>
-                            <button onclick="rejectRequest(${req.id}, '${req.targetName}')" class="py-2.5 bg-red-950/80 border border-red-800 text-red-300 rounded-2xl font-semibold text-xs transition-all">Reject</button>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function acceptRequest(id) {
-            const req = pendingRequests.find(r => r.id === id);
-            if (!req) return;
-            activeMatch = { name: req.senderName, photo: req.senderPhoto, location: req.location };
-            localStorage.setItem('eun_active_match', JSON.stringify(activeMatch));
-            pendingRequests = pendingRequests.filter(r => r.id !== id);
-            localStorage.setItem('eun_pending_requests', JSON.stringify(pendingRequests));
-            renderIncomingRequests();
-            renderActiveMatchState();
-            showToast("Match Connected!", "You can now message and call securely.", "🎉");
-        }
-
-        function rejectRequest(id, targetName) {
-            pendingRequests = pendingRequests.filter(r => r.id !== id);
-            localStorage.setItem('eun_pending_requests', JSON.stringify(pendingRequests));
-            dailyAttempts[targetName] = (dailyAttempts[targetName] || 0) + 1;
-            localStorage.setItem('eun_daily_attempts', JSON.stringify(dailyAttempts));
-            renderIncomingRequests();
-            showToast("Rejected", "Request rejected successfully.", "🚫");
-        }
-
-        function renderActiveMatchState() {
-            const emptyState = document.getElementById('matchesEmptyState');
-            const chatBox = document.getElementById('activeChatBox');
-            if (activeMatch) {
-                emptyState.classList.add('hidden');
-                chatBox.classList.remove('hidden');
-                document.getElementById('activeChatName').innerText = activeMatch.name;
-                document.getElementById('activeChatAvatar').src = activeMatch.photo;
-            } else {
-                emptyState.classList.remove('hidden');
-                chatBox.classList.add('hidden');
-            }
-        }
-
-        function sendChatMessage() {
-            const input = document.getElementById('chatInputMsg');
-            const text = input.value.trim();
-            if (!text) return;
-            const list = document.getElementById('chatMessagesList');
-            list.innerHTML += `<div class="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3 rounded-2xl max-w-[82%] ml-auto shadow-md">${text}</div>`;
-            input.value = '';
-            list.scrollTop = list.scrollHeight;
-        }
-
-        function startVoiceCall() {
-            document.getElementById('callOverlayName').innerText = activeMatch ? activeMatch.name : 'Match';
-            document.getElementById('callOverlayAvatar').src = activeMatch ? activeMatch.photo : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80';
-            document.getElementById('callOverlayStatus').innerText = 'Connecting secure Elite voice call...';
-            document.getElementById('callOverlayModal').classList.remove('hidden');
-        }
-
-        function startVideoCall() {
-            document.getElementById('callOverlayName').innerText = activeMatch ? activeMatch.name : 'Match';
-            document.getElementById('callOverlayAvatar').src = activeMatch ? activeMatch.photo : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80';
-            document.getElementById('callOverlayStatus').innerText = 'Connecting secure live video feed...';
-            document.getElementById('callOverlayModal').classList.remove('hidden');
-        }
-
-        function endCall() {
-            document.getElementById('callOverlayModal').classList.add('hidden');
-            showToast("Call Ended", "Secure session disconnected.", "📞");
-        }
-
-        function shareLiveLocation() {
-            const list = document.getElementById('chatMessagesList');
-            list.innerHTML += `
-                <div class="bg-gray-900 border border-emerald-500/40 p-3.5 rounded-2xl max-w-[85%] space-y-2">
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">📍</span>
-                        <div><p class="font-bold text-emerald-400 text-xs">Live Elite Pinpoint Shared</p><p class="text-[10px] text-gray-400">Koramangala 4th Block, Bengaluru</p></div>
-                    </div>
-                    <div class="h-24 bg-gray-950 rounded-xl overflow-hidden relative border border-gray-800 flex items-center justify-center">
-                        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:12px_12px]"></div>
-                        <span class="bg-emerald-600 text-white text-[9px] font-bold px-3 py-1 rounded-full shadow-lg">● Live Location Active</span>
-                    </div>
-                </div>`;
-            list.scrollTop = list.scrollHeight;
-            showToast("Location Shared", "Live location pinned in chat.", "📍");
-        }
-
-        window.cardSlideIndices = {};
-        function cyclePhotoSlide(cardId, totalPhotos) {
-            if (window.cardSlideIndices[cardId] === undefined) window.cardSlideIndices[cardId] = 0;
-            window.cardSlideIndices[cardId] = (window.cardSlideIndices[cardId] + 1) % totalPhotos;
-            const targetIdx = window.cardSlideIndices[cardId];
-            const slides = document.querySelectorAll(`.profile-slide-${cardId}`);
-            const dots = document.querySelectorAll(`.photo-dot-${cardId}`);
-            const counter = document.querySelector(`.photo-counter-${cardId}`);
-
-            slides.forEach((slide, idx) => {
-                slide.classList.toggle('hidden', idx !== targetIdx);
-                slide.classList.toggle('block', idx === targetIdx);
-            });
-            dots.forEach((dot, idx) => {
-                dot.className = `h-1 rounded-full flex-1 bg-white/${idx === targetIdx ? '90' : '40'} photo-dot-${cardId}`;
-            });
-            if (counter) counter.innerText = `📷 Tap photo (${targetIdx + 1}/${totalPhotos})`;
-        }
-
-        function openCurrentCardPhoto(cardId, title) {
-            const currentIdx = window.cardSlideIndices[cardId] || 0;
-            const slides = document.querySelectorAll(`.profile-slide-${cardId}`);
-            if (slides[currentIdx]) previewMedia(slides[currentIdx].src, `${title} — Photo ${currentIdx + 1}`);
-        }
-
-        function previewMedia(url, title) {
-            document.getElementById('previewTitle').innerText = title;
-            document.getElementById('mediaPreviewContainer').innerHTML = `<img src="${url}" class="max-h-full max-w-full rounded-2xl object-contain shadow-2xl">`;
-            document.getElementById('mediaPreviewModal').classList.remove('hidden');
-        }
-        function closeMediaPreview() { document.getElementById('mediaPreviewModal').classList.add('hidden'); }
-
-        function switchTab(tab) {
-            ['Discover', 'Matches', 'Profile'].forEach(t => {
-                document.getElementById('tab' + t).classList.add('hidden');
-                document.getElementById('nav' + t).className = "flex flex-col items-center gap-1 text-gray-400";
-            });
-            document.getElementById('tab' + tab).classList.remove('hidden');
-            document.getElementById('nav' + tab).className = "flex flex-col items-center gap-1 text-pink-500";
-        }
-
-        function filterLocation(loc, evt) {
-            document.querySelectorAll('.loc-pill').forEach(b => b.className = "loc-pill px-4 py-2 rounded-2xl bg-gray-900/90 text-gray-300 border border-gray-800 whitespace-nowrap font-medium");
-            if (evt && evt.target) evt.target.className = "loc-pill px-4 py-2 rounded-2xl bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold whitespace-nowrap shadow-lg shadow-pink-600/20";
-            document.querySelectorAll('.profile-card').forEach(card => card.classList.toggle('hidden', loc !== 'all' && card.dataset.location !== loc));
-        }
-
-        function openSignupModal() { document.getElementById('signupModal').classList.remove('hidden'); }
-        function closeSignupModal() {
-            if (otpMediaStream) { otpMediaStream.getTracks().forEach(t => t.stop()); otpMediaStream = null; }
-            document.getElementById('signupModal').classList.add('hidden');
-        }
-
-        function switchAuthMode(mode) {
-            if (mode === 'login') {
-                document.getElementById('authViewLogin').classList.remove('hidden');
-                document.getElementById('authViewSignup').classList.add('hidden');
-                document.getElementById('authTabLogin').className = "flex-1 py-2.5 rounded-xl bg-pink-600 text-white font-bold transition-all";
-                document.getElementById('authTabSignup').className = "flex-1 py-2.5 rounded-xl text-gray-400 font-medium transition-all";
-                document.getElementById('authModalTitle').innerText = "🔑 Phone OTP Login";
-            } else {
-                document.getElementById('authViewLogin').classList.add('hidden');
-                document.getElementById('authViewSignup').classList.remove('hidden');
-                document.getElementById('authTabSignup').className = "flex-1 py-2.5 rounded-xl bg-pink-600 text-white font-bold transition-all";
-                document.getElementById('authTabLogin').className = "flex-1 py-2.5 rounded-xl text-gray-400 font-medium transition-all";
-                document.getElementById('authModalTitle').innerText = "✨ Create Elite Profile";
-            }
-        }
-
-        function requestOtpLogin() {
-            const phone = document.getElementById('loginPhone').value.trim();
-            if (phone.length < 10) { showToast("Error", "Please enter a valid 10-digit mobile number.", "⚠️"); return; }
-
-            const otpSection = document.getElementById('otpSection');
-            if (otpSection.classList.contains('hidden')) {
-                otpSection.classList.remove('hidden');
-                document.getElementById('otpActionBtn').innerText = "Verify OTP & Login";
-                showToast("OTP Sent", "Simulation OTP: 1234 sent to +91 " + phone, "📱");
-            } else {
-                const otp = document.getElementById('loginOtpInput').value.trim();
-                if (otp !== "1234") { showToast("Invalid OTP", "Please enter simulation OTP: 1234", "⚠️"); return; }
-                
-                userProfile = { name: "Suresh Manikanta, 27", location: "Koramangala", vibe: "Have Private Space • Drinks & Deep Chat", photos: ["https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"], status: 'approved' };
-                localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
-                renderUserProfileUI();
-                closeSignupModal();
-                showToast("Welcome Back!", "Logged in via Phone OTP successfully.", "🔓");
-            }
-        }
-
-        function handlePhotoUpload(event) {
-            const files = event.target.files;
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    uploadedPhotoUrls.push(e.target.result);
-                    renderPhotoPreviews();
-                };
-                reader.readAsDataURL(files[i]);
-            }
-        }
-
-        function removeUploadedPhoto(index) {
-            uploadedPhotoUrls.splice(index, 1);
-            renderPhotoPreviews();
-            showToast("Photo Removed", "Selected photo removed from list.", "🗑️");
-        }
-
-        function renderPhotoPreviews() {
-            const grid = document.getElementById('photoPreviewGrid');
-            grid.innerHTML = '';
-            uploadedPhotoUrls.forEach((url, idx) => {
-                grid.innerHTML += `
-                    <div class="h-20 rounded-xl overflow-hidden border border-gray-700 relative group">
-                        <img src="${url}" class="w-full h-full object-cover">
-                        <button type="button" onclick="removeUploadedPhoto(${idx})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-md hover:bg-red-500">✕</button>
-                    </div>`;
-            });
-        }
-
-        async function initOtpCamera() {
-            try {
-                otpMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
-                document.getElementById('otpWebcamVideo').srcObject = otpMediaStream;
-                document.getElementById('startOtpCamBtn').classList.add('hidden');
-                document.getElementById('recordOtpVidBtn').disabled = false;
-                document.getElementById('videoCamStatusText').innerText = "Camera active. Click record and say code: " + currentGeneratedOtp;
-            } catch (err) {
-                showToast("Camera Active", "Simulated Video OTP Ready ✓", "✓");
-                document.getElementById('startOtpCamBtn').classList.add('hidden');
-                document.getElementById('recordOtpVidBtn').disabled = false;
-            }
-        }
-
-        function recordVerificationVideo() {
-            const recBtn = document.getElementById('recordOtpVidBtn');
-            const badge = document.getElementById('videoRecBadge');
-            
-            recBtn.disabled = true;
-            recBtn.innerText = "Recording... Say " + currentGeneratedOtp;
-            badge.classList.remove('hidden');
-
-            setTimeout(() => {
-                badge.classList.add('hidden');
-                recordedVideoBase64 = "Verified_OTP_Session_" + currentGeneratedOtp;
-                recBtn.innerText = "Recorded ✓";
-                document.getElementById('videoCamStatusText').innerText = "✓ Video OTP verified successfully!";
-                if (otpMediaStream) { otpMediaStream.getTracks().forEach(t => t.stop()); otpMediaStream = null; }
-            }, 3000);
-        }
-
-        function submitRegistration() {
-            const name = document.getElementById('regName').value.trim();
-            const location = document.getElementById('regLocation').value;
-            const placeStatus = document.getElementById('regPlaceStatus').value;
-            const vibe = document.getElementById('regVibe').value;
-
-            if (!name) { showToast("Error", "Please enter your name and age.", "⚠️"); return; }
-            if (uploadedPhotoUrls.length < 2) { showToast("Error", "Please upload at least 2 photos.", "⚠️"); return; }
-
-            userProfile = {
-                id: 'USR_' + Date.now(),
-                name: name,
-                location: location,
-                vibe: `${placeStatus} • ${vibe}`,
-                photos: uploadedPhotoUrls.slice(0, 2),
-                status: 'pending',
-                verificationOtp: currentGeneratedOtp,
-                submittedAt: new Date().toLocaleString('en-IN')
-            };
-
-            try {
-                allUsersList.push(userProfile);
-                localStorage.setItem('eyn_users', JSON.stringify(allUsersList));
-                localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
-            } catch (e) {
-                localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
-            }
-            
-            renderUserProfileUI();
-            closeSignupModal();
-            document.getElementById('pendingApprovalScreen').classList.remove('hidden');
-            showToast("Submitted!", "Profile submitted for admin approval.", "⏳");
-        }
-
-        function renderAdminApprovals() {
-            const container = document.getElementById('adminApprovalsList');
-            if (!container) return;
-
-            const users = JSON.parse(localStorage.getItem('eyn_users') || '[]');
-            const pending = users.filter(u => u.status === 'pending');
-
-            if (pending.length === 0 && userProfile && userProfile.status === 'pending') {
-                container.innerHTML = `
-                    <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-2">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-bold text-white text-xs">${userProfile.name}</p>
-                                <p class="text-[10px] text-gray-400">Submitted: ${userProfile.submittedAt}</p>
-                            </div>
-                            <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md">
-                                OTP: ${userProfile.verificationOtp}
-                            </span>
-                        </div>
-                        <p class="text-[10px] text-emerald-400">✓ Video OTP Verified & Logged</p>
-                        <div class="flex gap-2 pt-1">
-                            <button onclick="updateUserApproval('${userProfile.id}', 'approved')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-[10px]">Approve</button>
-                            <button onclick="updateUserApproval('${userProfile.id}', 'rejected')" class="flex-1 py-2 bg-red-950 border border-red-800 text-red-300 rounded-xl font-semibold text-[10px]">Reject</button>
-                        </div>
-                    </div>`;
-                return;
-            }
-
-            if (pending.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-gray-500 text-[11px] bg-gray-950 rounded-2xl border border-gray-800">No pending registrations right now.</div>`;
-                return;
-            }
-
-            container.innerHTML = pending.map(user => `
-                <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-2">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="font-bold text-white text-xs">${user.name}</p>
-                            <p class="text-[10px] text-gray-400">Submitted: ${user.submittedAt}</p>
-                        </div>
-                        <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md">
-                            OTP: ${user.verificationOtp}
-                        </span>
-                    </div>
-                    <p class="text-[10px] text-emerald-400">✓ Video OTP Verified & Logged</p>
-                    <div class="flex gap-2 pt-1">
-                        <button onclick="updateUserApproval('${user.id}', 'approved')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-[10px]">Approve</button>
-                        <button onclick="updateUserApproval('${user.id}', 'rejected')" class="flex-1 py-2 bg-red-950 border border-red-800 text-red-300 rounded-xl font-semibold text-[10px]">Reject</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function updateUserApproval(userId, newStatus) {
-            let users = JSON.parse(localStorage.getItem('eyn_users') || '[]');
-            users = users.map(u => u.id === userId ? { ...u, status: newStatus } : u);
-            localStorage.setItem('eyn_users', JSON.stringify(users));
-            
-            if (userProfile) {
-                userProfile.status = newStatus;
-                localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
-                if (newStatus === 'approved') {
-                    document.getElementById('pendingApprovalScreen').classList.add('hidden');
-                    showToast("Approved!", "Your account has been unlocked by admin.", "✓");
-                    window.location.reload();
-                }
-            }
-            renderAdminApprovals();
-            showToast("Updated", `User status changed to ${newStatus}.`, "🛡️");
-        }
-
-        function renderUserProfileUI() {
-            if (!userProfile) return;
-            document.getElementById('profileDisplayName').innerText = userProfile.name;
-            const imgEl = document.getElementById('profileDisplayImg');
-            const initEl = document.getElementById('profileDisplayInitials');
-            if (userProfile.photos && userProfile.photos.length > 0) {
-                imgEl.src = userProfile.photos[0];
-                imgEl.classList.remove('hidden');
-                initEl.classList.add('hidden');
-            } else {
-                imgEl.classList.add('hidden');
-                initEl.classList.remove('hidden');
-                initEl.innerText = userProfile.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-            }
-        }
-
-        function logoutUser() {
-            localStorage.removeItem('eun_user_profile');
-            userProfile = null;
-            showToast("Logged Out", "Logged out securely.", "🚪");
-            openSignupModal();
-        }
-
-        function deleteAccount() {
-            if (confirm("Permanently delete your Elite account and clear all data?")) {
-                localStorage.clear();
-                userProfile = null;
-                userDiamonds = 10;
-                activePlanName = "Free Tier";
-                pendingRequests = [];
-                activeMatch = null;
-                updateDiamondDisplay();
-                renderIncomingRequests();
-                renderActiveMatchState();
-                showToast("Account Deleted", "All data wiped.", "🗑️");
-                openSignupModal();
-            }
-        }
-    </script>
+<body>
+
+<header>
+<div class="wrap row">
+<div class="brand">EXCHANGE <span>UR NEEDS</span></div>
+<div class="row">
+<button class="btn dark" onclick="openLogin()">Login</button>
+<button class="btn gold" onclick="openLogin()">Join Now</button>
+</div>
+</div>
+</header>
+
+<main id="home">
+<section class="hero wrap">
+<div>
+<p style="color:#e7bd70;font-weight:bold">✦ VERIFIED CONNECTIONS</p>
+<h1>Meet People.<br><span>Exchange Needs.</span></h1>
+<p>Connect with people who share your interests, expectations and lifestyle. Build genuine connections through honesty, respect and trust.</p>
+<button class="btn gold" onclick="openLogin()">Create Your Profile</button>
+</div>
+<div class="hero-card">
+<h2>Trust starts here.</h2>
+<p>1. Create your profile</p>
+<p>2. Submit verification request</p>
+<p>3. Wait for platform review</p>
+<p>4. Connect respectfully</p>
+<p style="color:#e7bd70">18+ Members Only</p>
+</div>
+</section>
+
+<section class="section wrap">
+<h2>Why Exchange Ur Needs?</h2>
+<div class="grid">
+<div class="card"><h3>Verified Members</h3><p>Profiles should be approved only after genuine identity review.</p></div>
+<div class="card"><h3>Real Connections</h3><p>Meet people with shared interests and expectations.</p></div>
+<div class="card"><h3>Privacy First</h3><p>Keep personal information protected and communicate respectfully.</p></div>
+</div>
+</section>
+
+<section class="section wrap">
+<h2>Membership Plans</h2>
+<div class="grid">
+<div class="card"><h3>Free</h3><h2>₹0</h2><p>Basic profile creation</p><button class="btn dark" onclick="selectPlan('Free')">Choose Plan</button></div>
+<div class="card"><h3>Plus</h3><h2>₹199/month</h2><p>Enhanced profile display</p><button class="btn gold" onclick="selectPlan('Plus')">Choose Plan</button></div>
+<div class="card"><h3>Premium</h3><h2>₹499/month</h2><p>Premium profile display</p><button class="btn dark" onclick="selectPlan('Premium')">Choose Plan</button></div>
+</div>
+<div class="notice">Demo pricing only. Online payment is not connected yet.</div>
+</section>
+</main>
+
+<section id="dashboard" class="wrap hidden">
+<div class="row">
+<div><h2>My Dashboard</h2><p id="welcome"></p></div>
+<button class="btn dark" onclick="logout()">Logout</button>
+</div>
+
+<div class="tabs">
+<button class="tab active" onclick="showTab('profile',this)">My Profile</button>
+<button class="tab" onclick="showTab('discover',this)">Discover</button>
+<button class="tab" onclick="showTab('requests',this)">My Requests</button>
+<button class="tab" onclick="showTab('membership',this)">Membership</button>
+</div>
+
+<div id="profile" class="panel">
+<h3>Complete Your Profile</h3>
+<form id="profileForm">
+<label>Full Name</label>
+<input id="name" required maxlength="60" placeholder="Enter your name">
+<label>Age (18+)</label>
+<input id="age" type="number" min="18" max="99" required placeholder="Your age">
+<label>City</label>
+<input id="city" required placeholder="Your city">
+<label>About You</label>
+<textarea id="about" maxlength="500" placeholder="Tell us about yourself"></textarea>
+<label>Your Interests</label>
+<input id="interests" placeholder="Travel, movies, music...">
+<label>Looking For</label>
+<select id="looking">
+<option>Friendship</option>
+<option>Shared Activities</option>
+<option>Dating</option>
+<option>Meaningful Relationship</option>
+</select>
+<label><input type="checkbox" id="adult" required style="width:auto"> I confirm that I am 18 years or older.</label>
+<br><br>
+<button class="btn gold" type="submit">Save Profile</button>
+<button class="btn dark" type="button" onclick="verifyProfile()">Submit For Verification</button>
+</form>
+<div class="notice" id="verifyStatus">Verification status: Not submitted</div>
+</div>
+
+<div id="discover" class="panel hidden">
+<h3>Discover Members</h3>
+<p>Only genuinely approved profiles should be shown here. Shared member discovery requires a connected backend.</p>
+<div class="notice">No verified profiles available in this demo.</div>
+</div>
+
+<div id="requests" class="panel hidden">
+<h3>My Requests</h3>
+<div id="requestList">No requests yet.</div>
+</div>
+
+<div id="membership" class="panel hidden">
+<h3>My Membership</h3>
+<p>Current Plan: <strong id="planName">Free</strong></p>
+<div class="notice">Plan selection is a demo only. No payment has been taken.</div>
+</div>
+</section>
+
+<div id="loginModal" class="modal hidden">
+<div class="modal-box">
+<div class="row"><h2>Create Account / Login</h2><button class="btn dark" onclick="closeLogin()">✕</button></div>
+<form id="loginForm">
+<label>Your Name</label>
+<input id="loginName" required placeholder="Enter name">
+<label>Email Address</label>
+<input id="email" type="email" required placeholder="Email">
+<label>Password (minimum 8 characters)</label>
+<input id="password" type="password" minlength="8" required placeholder="Password">
+<label><input type="checkbox" id="adultCheck" required style="width:auto"> I am 18 years or older.</label>
+<br><br>
+<button class="btn gold" style="width:100%">Continue</button>
+</form>
+<div class="notice">This starter version stores demo data in this browser only. It is not secure server-based authentication.</div>
+</div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<footer class="wrap">
+<h3>EXCHANGE UR NEEDS</h3>
+<p>18+ only. Respect, consent, privacy and safety are essential.</p>
+<p>This is a frontend demo. Real authentication, admin verification, database, messaging and payment require secure backend integration.</p>
+</footer>
+
+<script>
+"use strict";
+const KEY="exchange_ur_needs_v1";
+let data=loadData();
+let toastTimer;
+
+function loadData(){
+try{
+return JSON.parse(localStorage.getItem(KEY))||{
+user:null,profile:null,requests:[],plan:"Free"
+};
+}catch(e){
+return {user:null,profile:null,requests:[],plan:"Free"};
+}
+}
+function saveData(){
+try{
+localStorage.setItem(KEY,JSON.stringify(data));
+return true;
+}catch(e){
+notify("Unable to save data in this browser.");
+return false;
+}
+}
+function notify(msg){
+const t=document.getElementById("toast");
+t.textContent=msg;
+t.classList.remove("hidden");
+clearTimeout(toastTimer);
+toastTimer=setTimeout(()=>t.classList.add("hidden"),3000);
+}
+function openLogin(){
+document.getElementById("loginModal").classList.remove("hidden");
+}
+function closeLogin(){
+document.getElementById("loginModal").classList.add("hidden");
+}
+document.getElementById("loginForm").addEventListener("submit",function(e){
+e.preventDefault();
+const n=document.getElementById("loginName").value.trim();
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+if(password.length<8){notify("Password must be at least 8 characters.");return;}
+data.user={name:n,email:email};
+saveData();
+closeLogin();
+openDashboard();
+notify("Demo account created.");
+});
+function openDashboard(){
+document.getElementById("home").classList.add("hidden");
+document.getElementById("dashboard").classList.remove("hidden");
+document.getElementById("welcome").textContent="Welcome, "+data.user.name;
+document.getElementById("planName").textContent=data.plan;
+if(data.profile){
+document.getElementById("name").value=data.profile.name||"";
+document.getElementById("age").value=data.profile.age||"";
+document.getElementById("city").value=data.profile.city||"";
+document.getElementById("about").value=data.profile.about||"";
+document.getElementById("interests").value=data.profile.interests||"";
+document.getElementById("looking").value=data.profile.looking||"Friendship";
+document.getElementById("verifyStatus").textContent="Verification status: "+data.profile.status;
+}
+renderRequests();
+}
+function logout(){
+data.user=null;
+saveData();
+document.getElementById("dashboard").classList.add("hidden");
+document.getElementById("home").classList.remove("hidden");
+notify("Logged out.");
+}
+function showTab(id,button){
+document.querySelectorAll("#dashboard .panel").forEach(p=>p.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+button.classList.add("active");
+}
+document.getElementById("profileForm").addEventListener("submit",function(e){
+e.preventDefault();
+const age=Number(document.getElementById("age").value);
+if(age<18||age>99){notify("You must be 18 or older.");return;}
+data.profile={
+name:document.getElementById("name").value.trim(),
+age:age,
+city:document.getElementById("city").value.trim(),
+about:document.getElementById("about").value.trim(),
+interests:document.getElementById("interests").value.trim(),
+looking:document.getElementById("looking").value,
+status:data.profile?.status||"Draft"
+};
+if(!data.profile.name||!data.profile.city){notify("Complete your name and city.");return;}
+saveData();
+notify("Profile saved on this device.");
+});
+function verifyProfile(){
+if(!data.profile){notify("Please save your profile first.");return;}
+data.profile.status="Pending";
+saveData();
+document.getElementById("verifyStatus").textContent="Verification status: Pending review";
+notify("Request saved locally. Not sent to admin.");
+}
+function selectPlan(plan){
+if(!data.user){openLogin();return;}
+data.plan=plan;
+saveData();
+document.getElementById("planName").textContent=plan;
+notify(plan+" selected for demo. No payment taken.");
+}
+function renderRequests(){
+const el=document.getElementById("requestList");
+el.textContent=data.requests.length?data.requests.map(x=>x.name+" - "+x.status).join("\n"):"No requests yet.";
+}
+window.addEventListener("load",function(){
+if(data.user)openDashboard();
+});
+</script>
 </body>
 </html>
 
