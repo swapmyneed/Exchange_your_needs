@@ -184,15 +184,17 @@
             <!-- ADMIN TAB -->
             <div id="tabAdmin" class="p-4 space-y-4 hidden">
                 <div class="glass-panel border-purple-500/40 p-4 rounded-3xl space-y-2 neon-glow-purple">
-                    <h2 class="text-xs font-extrabold text-purple-300 uppercase tracking-wider">🛡️ Elite Admin & Payment Gateway Center</h2>
-                    <p class="text-[11px] text-gray-300">Configure your direct UPI merchant ID to receive automated pass payments instantly from users.</p>
+                    <h2 class="text-xs font-extrabold text-purple-300 uppercase tracking-wider">🛡️ Elite Admin & Verification Center</h2>
+                    <p class="text-[11px] text-gray-300">Configure direct UPI merchant settings and review pending user registrations & video OTP verifications.</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-1 bg-gray-950 p-1 rounded-2xl border border-gray-800 text-xs">
+                <div class="grid grid-cols-3 gap-1 bg-gray-950 p-1 rounded-2xl border border-gray-800 text-xs">
                     <button onclick="switchAdminSubTab('finance')" id="adminTabFinance" class="py-2.5 rounded-xl bg-purple-950 text-purple-300 font-bold transition-all">UPI Settings</button>
-                    <button onclick="switchAdminSubTab('chats')" id="adminTabChats" class="py-2.5 rounded-xl text-gray-400 font-medium transition-all">Chat Logs</button>
+                    <button onclick="switchAdminSubTab('approvals')" id="adminTabApprovals" class="py-2.5 rounded-xl text-gray-400 font-medium transition-all">Approvals</button>
+                    <button onclick="switchAdminSubTab('chats')" id="adminTabChats" class="py-2.5 rounded-xl text-gray-400 font-medium transition-all">Chats</button>
                 </div>
 
+                <!-- UPI Settings Sub-tab -->
                 <div id="adminSubFinance" class="space-y-3">
                     <div class="glass-panel rounded-3xl p-4 space-y-3 text-xs">
                         <h3 class="font-bold text-pink-400 text-sm">💳 Direct UPI Integration</h3>
@@ -210,6 +212,22 @@
                     </div>
                 </div>
 
+                <!-- Pending Approvals & Video OTP Sub-tab -->
+                <div id="adminSubApprovals" class="space-y-3 hidden">
+                    <div class="glass-panel rounded-3xl p-4 space-y-3 text-xs">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-amber-400 text-sm">⏳ Pending Registrations & Video OTP</h3>
+                            <button onclick="renderAdminApprovals()" class="px-2.5 py-1 bg-gray-800 rounded-lg text-[10px]">Refresh</button>
+                        </div>
+                        <div id="adminApprovalsList" class="space-y-3">
+                            <div class="text-center py-6 text-gray-500 text-[11px] bg-gray-950 rounded-2xl border border-gray-800">
+                                No pending registrations right now.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Chat Logs Sub-tab -->
                 <div id="adminSubChats" class="space-y-3 hidden">
                     <div class="glass-panel rounded-3xl p-4 space-y-3 text-xs">
                         <h3 class="font-bold text-purple-300 text-sm">💬 Active User Conversations</h3>
@@ -398,7 +416,7 @@
                     <button id="otpActionBtn" onclick="requestOtpLogin()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-extrabold text-sm text-white shadow-lg">Send Verification OTP</button>
                 </div>
 
-                <!-- SIGNUP / EDIT VIEW WITH REMOVABLE PHOTO PREVIEWS & LIVE CAMERA -->
+                <!-- SIGNUP / EDIT VIEW WITH REMOVABLE PHOTO PREVIEWS & LIVE VIDEO OTP -->
                 <div id="authViewSignup" class="space-y-3.5 text-xs">
                     <div>
                         <label class="text-gray-400 block mb-1.5 font-bold">Your Full Name & Age</label>
@@ -442,23 +460,42 @@
                         <div id="photoPreviewGrid" class="grid grid-cols-3 gap-2 mt-2"></div>
                     </div>
 
-                    <!-- Live Camera Verification Box with Real Webcam Feed -->
+                    <!-- Live Video OTP Verification Box -->
                     <div class="bg-gray-950 p-3.5 rounded-2xl border border-gray-800 space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-emerald-400 font-bold flex items-center gap-1.5 text-xs">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span> Live Camera Verification
+                            <span class="text-amber-400 font-bold flex items-center gap-1.5 text-xs">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span> Live Video OTP Verification
                             </span>
-                            <button id="camToggleBtn" onclick="toggleLiveCamera()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-[10px] shadow">Start Camera</button>
                         </div>
-                        <div id="cameraContainer" class="hidden relative h-40 bg-black rounded-xl overflow-hidden border border-emerald-500/50 flex items-center justify-center">
-                            <video id="webcamVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                            <button onclick="captureLiveSnap()" class="absolute bottom-2 px-4 py-1.5 bg-emerald-500 text-black font-extrabold rounded-full text-[10px] shadow-lg">📸 Capture & Verify</button>
+                        <p class="text-[11px] text-zinc-300">Record a quick 5s video saying this assigned spoken code out loud:</p>
+                        <div class="bg-black border border-amber-500/40 rounded-xl p-3 text-center">
+                            <span id="assignedOtpDisplay" class="text-2xl font-extrabold tracking-[0.2em] text-amber-400">----</span>
                         </div>
-                        <p id="camStatusText" class="text-[10px] text-gray-400">Click start camera to verify your face instantly.</p>
+                        <div id="videoOtpContainer" class="relative h-40 bg-black rounded-xl overflow-hidden border border-amber-500/50 flex items-center justify-center">
+                            <video id="otpWebcamVideo" autoplay playsinline muted class="w-full h-full object-cover scale-x-[-1]"></video>
+                            <div id="videoRecBadge" class="hidden absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                                <span class="w-1.5 h-1.5 bg-white rounded-full"></span> REC (5s)
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="startOtpCamBtn" onclick="initOtpCamera()" class="flex-1 py-2 bg-zinc-800 text-white rounded-xl font-bold text-[10px]">1. Start Camera</button>
+                            <button id="recordOtpVidBtn" onclick="recordVerificationVideo()" disabled class="flex-1 py-2 bg-amber-500 disabled:bg-zinc-800 text-black font-bold text-[10px]">2. Record 5s Video</button>
+                        </div>
+                        <p id="videoCamStatusText" class="text-[10px] text-gray-400">Required for Admin Approval.</p>
                     </div>
 
-                    <button onclick="submitRegistration()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 rounded-2xl font-extrabold text-sm text-white shadow-xl">Save & Launch Profile</button>
+                    <button onclick="submitRegistration()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 rounded-2xl font-extrabold text-sm text-white shadow-xl">Submit for Admin Approval</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Pending Approval Lock Screen Modal -->
+        <div id="pendingApprovalScreen" class="fixed inset-0 z-50 hidden bg-zinc-950 flex items-center justify-center p-6 text-center text-white">
+            <div class="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+                <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-xl font-bold">⏳</div>
+                <h2 class="text-xl font-bold">Verification Under Review</h2>
+                <p class="text-sm text-zinc-400">Your profile and video OTP clip have been submitted to the admin. Once approved, your account unlocks automatically.</p>
+                <button onclick="logoutUser()" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold">Back to Home</button>
             </div>
         </div>
 
@@ -482,9 +519,12 @@
         let uploadedPhotoUrls = [];
         let currentTargetProfile = {};
         let selectedPlanInfo = {};
-        let mediaStream = null;
-        let isCameraActive = false;
-        let isOtpStepActive = false;
+        
+        let otpMediaStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let recordedVideoBase64 = null;
+        let currentGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString();
 
         let userDiamonds = parseInt(localStorage.getItem('eun_diamonds') || "10");
         let activePlanName = localStorage.getItem('eun_active_plan') || "Free Tier";
@@ -495,16 +535,25 @@
         let activeMatch = JSON.parse(localStorage.getItem('eun_active_match') || "null");
         let dailyAttempts = JSON.parse(localStorage.getItem('eun_daily_attempts') || "{}");
         let userProfile = JSON.parse(localStorage.getItem('eun_user_profile') || "null");
+        let allUsersList = JSON.parse(localStorage.getItem('eyn_users') || "[]");
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('adminUpiInput').value = merchantUpiId;
             document.getElementById('adminMerchantInput').value = merchantName;
+            document.getElementById('assignedOtpDisplay').innerText = currentGeneratedOtp;
             updateDiamondDisplay();
             renderIncomingRequests();
             renderActiveMatchState();
             renderUserProfileUI();
+            renderAdminApprovals();
 
-            if (!userProfile) {
+            if (userProfile) {
+                if (userProfile.status === 'pending') {
+                    document.getElementById('pendingApprovalScreen').classList.remove('hidden');
+                } else if (userProfile.status !== 'approved' && !userProfile.isAdmin) {
+                    openSignupModal();
+                }
+            } else {
                 openSignupModal();
             }
 
@@ -550,11 +599,12 @@
                 document.getElementById('tabAdmin').classList.remove('hidden');
                 document.getElementById('bottomNav').classList.add('hidden');
                 document.getElementById('adminToggleBtn').innerHTML = "👤 Exit";
+                renderAdminApprovals();
             }
         }
 
         function switchAdminSubTab(subTab) {
-            ['finance', 'chats'].forEach(t => {
+            ['finance', 'approvals', 'chats'].forEach(t => {
                 document.getElementById('adminSub' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden');
                 document.getElementById('adminTab' + t.charAt(0).toUpperCase() + t.slice(1)).className = "py-2.5 rounded-xl text-gray-400 font-medium transition-all";
             });
@@ -818,7 +868,7 @@
 
         function openSignupModal() { document.getElementById('signupModal').classList.remove('hidden'); }
         function closeSignupModal() {
-            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+            if (otpMediaStream) { otpMediaStream.getTracks().forEach(t => t.stop()); otpMediaStream = null; }
             document.getElementById('signupModal').classList.add('hidden');
         }
 
@@ -843,19 +893,17 @@
             const phone = document.getElementById('loginPhone').value.trim();
             if (phone.length < 10) { showToast("Error", "Please enter a valid 10-digit mobile number.", "⚠️"); return; }
 
-            if (!isOtpStepActive) {
-                isOtpStepActive = true;
-                document.getElementById('otpSection').classList.remove('hidden');
+            const otpSection = document.getElementById('otpSection');
+            if (otpSection.classList.contains('hidden')) {
+                otpSection.classList.remove('hidden');
                 document.getElementById('otpActionBtn').innerText = "Verify OTP & Login";
                 showToast("OTP Sent", "Simulation OTP: 1234 sent to +91 " + phone, "📱");
             } else {
                 const otp = document.getElementById('loginOtpInput').value.trim();
                 if (otp !== "1234") { showToast("Invalid OTP", "Please enter simulation OTP: 1234", "⚠️"); return; }
                 
-                if (!userProfile) {
-                    userProfile = { name: "Suresh Manikanta, 27", location: "Koramangala", vibe: "Have Private Space • Drinks & Deep Chat", photos: ["https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"] };
-                    localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
-                }
+                userProfile = { name: "Suresh Manikanta, 27", location: "Koramangala", vibe: "Have Private Space • Drinks & Deep Chat", photos: ["https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"], status: 'approved' };
+                localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
                 renderUserProfileUI();
                 closeSignupModal();
                 showToast("Welcome Back!", "Logged in via Phone OTP successfully.", "🔓");
@@ -893,42 +941,50 @@
             });
         }
 
-        // REAL WEBCAM LIVE VERIFICATION
-        async function toggleLiveCamera() {
-            const videoEl = document.getElementById('webcamVideo');
-            const containerEl = document.getElementById('cameraContainer');
-            const btnEl = document.getElementById('camToggleBtn');
-            const statusEl = document.getElementById('camStatusText');
-
-            if (!isCameraActive) {
-                try {
-                    mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                    videoEl.srcObject = mediaStream;
-                    containerEl.classList.remove('hidden');
-                    btnEl.innerText = "Stop Camera";
-                    btnEl.className = "px-3 py-1.5 bg-red-600 text-white rounded-xl font-bold text-[10px] shadow";
-                    statusEl.innerText = "Camera active. Position your face and capture verification.";
-                    isCameraActive = true;
-                } catch (err) {
-                    showToast("Camera Error", "Permission denied or camera unavailable. Simulating verification instead.", "⚠️");
-                    statusEl.innerText = "✓ Simulated Live Camera Verification Passed!";
-                }
-            } else {
-                if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
-                containerEl.classList.add('hidden');
-                btnEl.innerText = "Start Camera";
-                btnEl.className = "px-3 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-[10px] shadow";
-                isCameraActive = false;
+        // LIVE VIDEO OTP VERIFICATION FLOW
+        async function initOtpCamera() {
+            try {
+                otpMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+                document.getElementById('otpWebcamVideo').srcObject = otpMediaStream;
+                document.getElementById('startOtpCamBtn').classList.add('hidden');
+                document.getElementById('recordOtpVidBtn').disabled = false;
+                document.getElementById('videoCamStatusText').innerText = "Camera active. Click record and say code: " + currentGeneratedOtp;
+            } catch (err) {
+                showToast("Camera Error", "Camera and mic permission required for verification.", "⚠️");
             }
         }
 
-        function captureLiveSnap() {
-            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
-            document.getElementById('cameraContainer').classList.add('hidden');
-            document.getElementById('camToggleBtn').innerText = "Verified ✓";
-            document.getElementById('camStatusText').innerText = "✓ Live Facial Biometric Verified Successfully!";
-            showToast("Verified!", "Live camera authentication passed.", "📸");
-            isCameraActive = false;
+        function recordVerificationVideo() {
+            recordedChunks = [];
+            const recBtn = document.getElementById('recordOtpVidBtn');
+            const badge = document.getElementById('videoRecBadge');
+            
+            recBtn.disabled = true;
+            recBtn.innerText = "Recording... Say " + currentGeneratedOtp;
+            badge.classList.remove('hidden');
+
+            mediaRecorder = new MediaRecorder(otpMediaStream);
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) recordedChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                badge.classList.add('hidden');
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                    recordedVideoBase64 = reader.result;
+                    recBtn.innerText = "Recorded ✓";
+                    document.getElementById('videoCamStatusText').innerText = "✓ Video OTP recorded successfully!";
+                    if (otpMediaStream) { otpMediaStream.getTracks().forEach(t => t.stop()); otpMediaStream = null; }
+                };
+            };
+
+            mediaRecorder.start();
+            setTimeout(() => {
+                if (mediaRecorder.state === "recording") mediaRecorder.stop();
+            }, 5000);
         }
 
         function submitRegistration() {
@@ -939,18 +995,79 @@
 
             if (!name) { showToast("Error", "Please enter your name and age.", "⚠️"); return; }
             if (uploadedPhotoUrls.length < 2) { showToast("Error", "Please upload at least 2 photos.", "⚠️"); return; }
+            if (!recordedVideoBase64) { showToast("Error", "Please record your 5s Video OTP verification.", "⚠️"); return; }
 
             userProfile = {
+                id: 'USR_' + Date.now(),
                 name: name,
                 location: location,
                 vibe: `${placeStatus} • ${vibe}`,
-                photos: uploadedPhotoUrls
+                photos: uploadedPhotoUrls,
+                status: 'pending',
+                verificationOtp: currentGeneratedOtp,
+                verificationVideo: recordedVideoBase64,
+                submittedAt: new Date().toLocaleString('en-IN')
             };
 
+            allUsersList.push(userProfile);
+            localStorage.setItem('eyn_users', JSON.stringify(allUsersList));
             localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
+            
             renderUserProfileUI();
             closeSignupModal();
-            showToast("Success!", "Elite Profile launched successfully with 3+ media photos!", "✓");
+            document.getElementById('pendingApprovalScreen').classList.remove('hidden');
+            showToast("Submitted!", "Profile submitted for admin approval.", "⏳");
+        }
+
+        function renderAdminApprovals() {
+            const container = document.getElementById('adminApprovalsList');
+            if (!container) return;
+
+            const users = JSON.parse(localStorage.getItem('eyn_users') || '[]');
+            const pending = users.filter(u => u.status === 'pending');
+
+            if (pending.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-gray-500 text-[11px] bg-gray-950 rounded-2xl border border-gray-800">No pending registrations right now.</div>`;
+                return;
+            }
+
+            container.innerHTML = pending.map(user => `
+                <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-white text-xs">${user.name}</p>
+                            <p class="text-[10px] text-gray-400">Submitted: ${user.submittedAt}</p>
+                        </div>
+                        <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md">
+                            Required OTP: ${user.verificationOtp}
+                        </span>
+                    </div>
+                    ${user.verificationVideo ? `
+                        <video controls playsinline class="w-full rounded-xl bg-black max-h-40 border border-gray-800" src="${user.verificationVideo}"></video>
+                    ` : `<p class="text-[10px] text-red-400">No video attached</p>`}
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="updateUserApproval('${user.id}', 'approved')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-[10px]">Approve</button>
+                        <button onclick="updateUserApproval('${user.id}', 'rejected')" class="flex-1 py-2 bg-red-950 border border-red-800 text-red-300 rounded-xl font-semibold text-[10px]">Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateUserApproval(userId, newStatus) {
+            let users = JSON.parse(localStorage.getItem('eyn_users') || '[]');
+            users = users.map(u => u.id === userId ? { ...u, status: newStatus } : u);
+            localStorage.setItem('eyn_users', JSON.stringify(users));
+            
+            if (userProfile && userProfile.id === userId) {
+                userProfile.status = newStatus;
+                localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
+                if (newStatus === 'approved') {
+                    document.getElementById('pendingApprovalScreen').classList.add('hidden');
+                    showToast("Approved!", "Your account has been unlocked by admin.", "✓");
+                }
+            }
+            renderAdminApprovals();
+            showToast("Updated", `User status changed to ${newStatus}.`, "🛡️");
         }
 
         function renderUserProfileUI() {
@@ -994,3 +1111,4 @@
     </script>
 </body>
 </html>
+
