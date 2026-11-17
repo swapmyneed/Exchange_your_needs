@@ -1,350 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ExchangeUrNeeds</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supabase Login Demo</title>
   <style>
-    /* Colours */
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #0f1224;
-      color: #f5f5fa;
-    }
-    .page {
-      display: none;
-      max-width: 420px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .page.show { display: block; }
-
-    h1, h2 { font-family: 'Poppins', sans-serif; text-align: center; }
-    .logo {
-      background: linear-gradient(90deg, #ff4d7d, #ff8a5b);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-    .box {
-      background: #181c33;
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    input, select {
-      width: 100%;
-      padding: 12px;
-      margin: 6px 0 12px;
-      border-radius: 10px;
-      border: 1px solid #2c3158;
-      background: #0f1224;
-      color: #f5f5fa;
-      font-size: 15px;
-      box-sizing: border-box;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 8px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #ff4d7d, #ff8a5b);
-      color: white;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button.outline {
-      background: transparent;
-      border: 1px solid #ff4d7d;
-    }
-    .small-btn {
-      width: auto;
-      padding: 8px 12px;
-      font-size: 14px;
-      margin: 4px 4px 0 0;
-    }
-    .error { color: #ff4d7d; font-size: 14px; min-height: 20px; }
-    .avatar {
-      height: 260px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #3b2a6b, #ff4d7d);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 70px;
-      margin-bottom: 12px;
-    }
-    .chat-area {
-      background: #181c33;
-      border-radius: 14px;
-      height: 260px;
-      overflow-y: auto;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .msg {
-      padding: 8px 12px;
-      border-radius: 12px;
-      margin-bottom: 8px;
-      max-width: 80%;
-    }
-    .msg.me { background: #ff4d7d; margin-left: auto; }
-    .msg.them { background: #2c3158; }
-    .muted { color: #a3a8c3; font-size: 14px; }
+    body { font-family: Arial, sans-serif; max-width: 360px; margin: 40px auto; padding: 0 16px; }
+    input, button { display: block; width: 100%; padding: 10px; margin: 8px 0; font-size: 16px; box-sizing: border-box; }
+    button { cursor: pointer; }
+    #message { margin-top: 12px; color: #333; word-break: break-word; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
+  <h2>Login / Sign up</h2>
 
-  <!-- PAGE 1: WELCOME -->
-  <div class="page show" id="welcomePage">
-    <h1 class="logo">ExchangeUrNeeds</h1>
-    <p class="muted" style="text-align:center;">Find your match. Chat. Connect.</p>
-    <div class="box">
-      <p class="muted" style="text-align:center;">Only for adults. Men 21+, women 18+.</p>
-      <button onclick="goTo('signupPage')">Create account</button>
-      <button class="outline" onclick="goTo('loginPage')">I already have an account</button>
-    </div>
+  <div id="auth-box">
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password (min 6 characters)" />
+    <button id="signin-btn">Sign in</button>
+    <button id="signup-btn">Sign up</button>
   </div>
 
-  <!-- PAGE 2: SIGN UP -->
-  <div class="page" id="signupPage">
-    <h2>Create your profile</h2>
-    <div class="box">
-      <label>Name</label>
-      <input id="name" placeholder="Your name">
-
-      <label>Date of birth</label>
-      <input id="dob" type="date">
-
-      <label>I am</label>
-      <select id="gender">
-        <option value="">Select</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-      </select>
-
-      <label>City</label>
-      <input id="city" placeholder="e.g. Bengaluru">
-
-      <label>Email</label>
-      <input id="email" type="email" placeholder="you@example.com">
-
-      <label>Password (min 6 characters)</label>
-      <input id="password" type="password">
-
-      <div class="error" id="signupError"></div>
-      <button onclick="signUp()">Sign up</button>
-      <button class="outline" onclick="goTo('welcomePage')">Back</button>
-    </div>
+  <div id="user-box" class="hidden">
+    <p>Logged in as: <b id="user-email"></b></p>
+    <button id="signout-btn">Sign out</button>
   </div>
 
-  <!-- PAGE 3: LOGIN -->
-  <div class="page" id="loginPage">
-    <h2>Welcome back</h2>
-    <div class="box">
-      <label>Email</label>
-      <input id="loginEmail" type="email">
-      <label>Password</label>
-      <input id="loginPassword" type="password">
-      <div class="error" id="loginError"></div>
-      <button onclick="logIn()">Log in</button>
-      <button class="outline" onclick="goTo('welcomePage')">Back</button>
-    </div>
-  </div>
+  <p id="message"></p>
 
-  <!-- PAGE 4: DISCOVER -->
-  <div class="page" id="discoverPage">
-    <h2>Discover</h2>
-    <div class="box" id="profileCard"></div>
-    <div style="display:flex; justify-content:space-around;">
-      <button class="small-btn" style="width:90px;" onclick="nextProfile()">✖ Pass</button>
-      <button class="small-btn" style="width:90px;" onclick="likeProfile()">❤ Like</button>
-    </div>
-    <button class="outline" onclick="goTo('matchesPage')">View matches</button>
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Your project details (the publishable key is safe for browser code)
+    const SUPABASE_URL = "https://wswheiketugqozxgmywj.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Rz71BtlDUKmj2IXsgeK9rw__MwmqiV-";
 
-  <!-- PAGE 5: MATCHES -->
-  <div class="page" id="matchesPage">
-    <h2>Your matches</h2>
-    <div id="matchList"></div>
-    <button class="outline" onclick="goTo('discoverPage')">Back to discover</button>
-  </div>
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  <!-- PAGE 6: CHAT -->
-  <div class="page" id="chatPage">
-    <h2 id="chatTitle">Chat</h2>
-    <div>
-      <button class="small-btn" onclick="demo('Audio call')">📞 Audio</button>
-      <button class="small-btn" onclick="demo('Video call')">🎥 Video</button>
-      <button class="small-btn" onclick="shareLocation()">📍 Location</button>
-    </div>
-    <div class="chat-area" id="chatArea"></div>
-    <input id="messageBox" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
-    <button class="outline" onclick="goTo('matchesPage')">Back</button>
-    <div class="muted" id="chatInfo"></div>
-  </div>
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const message = document.getElementById("message");
+    const authBox = document.getElementById("auth-box");
+    const userBox = document.getElementById("user-box");
+    const userEmail = document.getElementById("user-email");
 
-<script>
-  // Minimum ages. Change these numbers if you need to.
-  const MIN_AGE = { male: 21, female: 18 };
-
-  // Sample profiles for the demo
-  const profiles = [
-    { name: "Ananya", age: 24, city: "Bengaluru", emoji: "👩", bio: "Coffee lover and weekend hiker" },
-    { name: "Rahul",  age: 27, city: "Bengaluru", emoji: "🧑", bio: "Gym in the morning, movies at night" },
-    { name: "Meera",  age: 22, city: "Mysuru",    emoji: "👧", bio: "Art, music and long drives" },
-    { name: "Arjun",  age: 29, city: "Chennai",   emoji: "👨", bio: "Travel planner. Ask me about Ladakh" }
-  ];
-
-  let currentIndex = 0;
-  let myMatches = [];
-  let currentChatPerson = null;
-
-  // Show one page and hide the others
-  function goTo(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
-    document.getElementById(pageId).classList.add('show');
-    window.scrollTo(0, 0);
-
-    if (pageId === 'discoverPage') showProfile();
-    if (pageId === 'matchesPage') showMatches();
-  }
-
-  // Work out age from date of birth
-  function getAge(dobText) {
-    const birth = new Date(dobText);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const hasHadBirthdayThisYear =
-      today.getMonth() > birth.getMonth() ||
-      (today.getMonth() === birth.getMonth() && today.getDate() >= birth.getDate());
-    if (!hasHadBirthdayThisYear) age--;
-    return age;
-  }
-
-  // Sign up with checks
-  function signUp() {
-    const name = document.getElementById('name').value.trim();
-    const dob = document.getElementById('dob').value;
-    const gender = document.getElementById('gender').value;
-    const city = document.getElementById('city').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const error = document.getElementById('signupError');
-
-    if (!name || !dob || !gender || !city || !email || password.length < 6) {
-      error.textContent = "Please fill everything. Password needs 6+ characters.";
-      return;
+    function showMessage(text) {
+      message.textContent = text;
     }
 
-    const age = getAge(dob);
-    if (age < MIN_AGE[gender]) {
-      error.textContent = "Sorry, you must be " + MIN_AGE[gender] + " or older to join.";
-      return;
-    }
-
-    error.textContent = "";
-    alert("Account created! (Demo only. Real saving comes in Stage 2.)");
-    goTo('discoverPage');
-  }
-
-  // Log in (demo only)
-  function logIn() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    if (!email || !password) {
-      document.getElementById('loginError').textContent = "Enter email and password.";
-      return;
-    }
-    goTo('discoverPage');
-  }
-
-  // Show the current profile card
-  function showProfile() {
-    const p = profiles[currentIndex % profiles.length];
-    document.getElementById('profileCard').innerHTML = `
-      <div class="avatar">${p.emoji}</div>
-      <h3 style="margin:0;">${p.name}, ${p.age}</h3>
-      <p class="muted">📍 ${p.city}</p>
-      <p>${p.bio}</p>`;
-  }
-
-  function nextProfile() {
-    currentIndex++;
-    showProfile();
-  }
-
-  // Liking adds a match (demo: every second like)
-  function likeProfile() {
-    const p = profiles[currentIndex % profiles.length];
-    if (currentIndex % 2 === 1) {
-      myMatches.push(p);
-      alert("It's a match with " + p.name + "! 💛");
-    }
-    nextProfile();
-  }
-
-  // List all matches
-  function showMatches() {
-    const list = document.getElementById('matchList');
-    if (myMatches.length === 0) {
-      list.innerHTML = '<p class="muted">No matches yet. Keep swiping!</p>';
-      return;
-    }
-    list.innerHTML = myMatches.map((m, i) => `
-      <div class="box" onclick="openChat(${i})" style="cursor:pointer;">
-        <strong>${m.emoji} ${m.name}</strong><br>
-        <span class="muted">${m.city}</span>
-      </div>`).join('');
-  }
-
-  // Open chat with one match
-  function openChat(i) {
-    currentChatPerson = myMatches[i];
-    document.getElementById('chatTitle').textContent = "Chat with " + currentChatPerson.name;
-    document.getElementById('chatArea').innerHTML = '<div class="msg them">Hi! We matched 😊</div>';
-    document.getElementById('chatInfo').textContent = "";
-    goTo('chatPage');
-  }
-
-  // Send a message (shows on screen only)
-  function sendMessage() {
-    const box = document.getElementById('messageBox');
-    const text = box.value.trim();
-    if (!text) return;
-
-    const area = document.getElementById('chatArea');
-    area.innerHTML += `<div class="msg me">${text}</div>`;
-    area.scrollTop = area.scrollHeight;
-    box.value = "";
-  }
-
-  // Demo for call buttons
-  function demo(type) {
-    document.getElementById('chatInfo').textContent = type + " will work in Stage 4.";
-  }
-
-  // Get the phone's location (demo)
-  function shareLocation() {
-    if (!navigator.geolocation) {
-      document.getElementById('chatInfo').textContent = "Location is not supported here.";
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        document.getElementById('chatInfo').textContent =
-          "Location shared: " + pos.coords.latitude.toFixed(3) + ", " + pos.coords.longitude.toFixed(3);
-      },
-      () => {
-        document.getElementById('chatInfo').textContent = "Location permission was denied.";
+    function updateUI(user) {
+      if (user) {
+        authBox.classList.add("hidden");
+        userBox.classList.remove("hidden");
+        userEmail.textContent = user.email;
+      } else {
+        authBox.classList.remove("hidden");
+        userBox.classList.add("hidden");
+        userEmail.textContent = "";
       }
-    );
-  }
-</script>
+    }
+
+    document.getElementById("signup-btn").addEventListener("click", async () => {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: emailInput.value,
+        password: passwordInput.value,
+      });
+      if (error) {
+        showMessage("Error: " + error.message);
+      } else if (data.session) {
+        showMessage("Account created and logged in.");
+      } else {
+        showMessage("Account created. Check your email to confirm, then sign in.");
+      }
+    });
+
+    document.getElementById("signin-btn").addEventListener("click", async () => {
+      const { error } = await supabaseClient.auth.signInWithPassword({
+        email: emailInput.value,
+        password: passwordInput.value,
+      });
+      if (error) {
+        showMessage("Error: " + error.message);
+      } else {
+        showMessage("Signed in.");
+      }
+    });
+
+    document.getElementById("signout-btn").addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      showMessage("Signed out.");
+    });
+
+    // Keep the screen in sync with the login state
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      updateUI(session ? session.user : null);
+    });
+  </script>
 </body>
 </html>
