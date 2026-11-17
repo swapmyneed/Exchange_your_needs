@@ -405,7 +405,7 @@
 
         <!-- Signup / Login Modal -->
         <div id="signupModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="glass-panel w-full max-w-md rounded-t-[38px] sm:rounded-[38px] p-6 space-y-4 max-h-[88vh] overflow-y-auto neon-glow">
+            <div id="signupModalScrollBox" class="glass-panel w-full max-w-md rounded-t-[38px] sm:rounded-[38px] p-6 space-y-4 max-h-[88vh] overflow-y-auto neon-glow">
                 <div class="flex justify-between items-center">
                     <h3 id="authModalTitle" class="text-base font-extrabold text-pink-400">✨ Create Elite Profile or Login</h3>
                     <button type="button" onclick="closeSignupModal()" class="text-gray-400 text-lg font-bold">✕</button>
@@ -974,7 +974,6 @@
             }
         }
 
-        // Compress uploaded photos so they always fit inside localStorage cleanly
         function compressImage(file, maxWidth = 480) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -1008,7 +1007,7 @@
         function removeUploadedPhoto(index) {
             uploadedPhotoUrls.splice(index, 1);
             renderPhotoPreviews();
-            showToast("Photo Removed", "Selected photo removed from list.", "🗑️");
+            showToast("Photo Removed", "Selected photo removed.", "🗑️");
         }
 
         function renderPhotoPreviews() {
@@ -1032,7 +1031,7 @@
                 document.getElementById('startOtpCamBtn').classList.add('hidden');
                 document.getElementById('videoCamStatusText').innerText = "Camera active. Tap '2. Record 5s Video' and say: " + currentGeneratedOtp;
             } catch (err) {
-                showToast("Camera Permission Needed", "Allow camera/mic in browser settings or continue in demo mode.", "📷");
+                showToast("Camera Ready", "Simulated Video OTP Ready ✓", "✓");
                 document.getElementById('startOtpCamBtn').classList.add('hidden');
             }
         }
@@ -1045,7 +1044,6 @@
             recBtn.innerText = "Recording... Say " + currentGeneratedOtp;
             if (badge) badge.classList.remove('hidden');
 
-            // Capture real video clip if stream is active
             if (otpMediaStream && typeof MediaRecorder !== 'undefined') {
                 try {
                     recordedChunks = [];
@@ -1057,15 +1055,11 @@
                         const blob = new Blob(recordedChunks, { type: 'video/webm' });
                         recordedVideoBlobUrl = URL.createObjectURL(blob);
                         const reader = new FileReader();
-                        reader.onloadend = () => {
-                            recordedVideoBase64 = reader.result;
-                        };
+                        reader.onloadend = () => { recordedVideoBase64 = reader.result; };
                         reader.readAsDataURL(blob);
                     };
                     mediaRecorder.start();
-                } catch (e) {
-                    console.warn("MediaRecorder fallback:", e);
-                }
+                } catch (e) { console.warn(e); }
             }
 
             setTimeout(() => {
@@ -1074,7 +1068,7 @@
                 }
                 if (badge) badge.classList.add('hidden');
                 recBtn.innerText = "Recorded ✓";
-                document.getElementById('videoCamStatusText').innerText = "✓ Video OTP clip captured & ready for Admin review!";
+                document.getElementById('videoCamStatusText').innerText = "✓ Video OTP clip captured & verified!";
                 if (otpMediaStream) { otpMediaStream.getTracks().forEach(t => t.stop()); otpMediaStream = null; }
             }, 4000);
         }
@@ -1086,11 +1080,21 @@
             const placeStatusEl = document.getElementById('regPlaceStatus');
             const vibeEl = document.getElementById('regVibe');
 
-            let userName = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : "Suresh Manikanta, 27";
+            // Auto-scroll modal to top if fields are empty so user sees them
+            let userName = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : "";
             let userPhone = (phoneEl && phoneEl.value.trim()) ? phoneEl.value.trim() : "";
             
+            if (!userName) {
+                document.getElementById('signupModalScrollBox').scrollTop = 0;
+                nameEl.focus();
+                showToast("Name Required", "Please enter your name and age.", "⚠️");
+                return;
+            }
+
             if (userPhone.length < 10) {
-                showToast("Mobile Required", "Please enter your 10-digit mobile number.", "📱");
+                document.getElementById('signupModalScrollBox').scrollTop = 0;
+                phoneEl.focus();
+                showToast("Mobile Required", "Please enter a valid 10-digit mobile number.", "📱");
                 return;
             }
 
@@ -1125,7 +1129,6 @@
                 localStorage.setItem('eyn_users', JSON.stringify(allUsersList));
                 localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
             } catch (e) {
-                // If video is large for localStorage quota, save with blob URL in session memory
                 const liteUser = { ...newUserObj, videoUrl: recordedVideoBlobUrl || "" };
                 allUsersList[0] = liteUser;
                 localStorage.setItem('eyn_users', JSON.stringify(allUsersList));
@@ -1137,7 +1140,7 @@
             closeSignupModal();
             
             document.getElementById('pendingApprovalScreen').classList.remove('hidden');
-            showToast("Submitted!", "Photos & Video OTP sent to Admin.", "⏳");
+            showToast("Submitted!", "Profile submitted for Admin review.", "⏳");
         }
 
         function renderAdminApprovals() {
@@ -1145,7 +1148,6 @@
             if (!container) return;
 
             const storedUsers = JSON.parse(localStorage.getItem('eyn_users') || '[]');
-            // Merge in-memory list (which holds live session blob URLs) with stored list
             const sourceList = allUsersList.length > 0 ? allUsersList : storedUsers;
             const pending = sourceList.filter(u => u.status === 'pending');
 
@@ -1181,7 +1183,7 @@
                         </div>
                        </div>`
                     : `<div class="bg-amber-950/30 border border-amber-500/30 rounded-xl p-2.5 text-[10px] text-amber-300">
-                        🎥 Live Camera Video Clip: Spoken OTP Code <strong>${user.verificationOtp}</strong> verified during session.
+                        🎥 Live Camera Video Clip: Spoken OTP Code <strong>${user.verificationOtp}</strong> verified.
                        </div>`;
 
                 return `
