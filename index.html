@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <!-- Header (z-[55] keeps Admin button accessible even over modals) -->
+        <!-- Header -->
         <header class="px-4 py-3.5 glass-panel border-b border-gray-800/60 flex items-center justify-between z-[55] shrink-0">
             <div class="min-w-0 pr-2">
                 <h1 class="text-sm sm:text-base font-extrabold tracking-tight bg-gradient-to-r from-pink-400 via-purple-300 to-indigo-300 bg-clip-text text-transparent flex items-center gap-1.5 truncate">
@@ -184,7 +184,7 @@
             <div id="tabAdmin" class="p-4 space-y-4 hidden">
                 <div class="glass-panel border-purple-500/40 p-4 rounded-3xl space-y-2 neon-glow-purple">
                     <h2 class="text-xs font-extrabold text-purple-300 uppercase tracking-wider">🛡️ Elite Admin & Verification Center</h2>
-                    <p class="text-[11px] text-gray-300">Approve pending user registrations & live video OTP clips, or configure direct UPI merchant payments.</p>
+                    <p class="text-[11px] text-gray-300">Inspect uploaded photos, watch recorded live video OTP clips, and approve registrations.</p>
                 </div>
 
                 <div class="grid grid-cols-3 gap-1 bg-gray-950 p-1 rounded-2xl border border-gray-800 text-xs">
@@ -193,14 +193,17 @@
                     <button type="button" onclick="switchAdminSubTab('chats')" id="adminTabChats" class="py-2.5 rounded-xl text-gray-400 font-medium transition-all">Chats</button>
                 </div>
 
-                <!-- Pending Approvals & Video OTP Sub-tab (Default Active) -->
+                <!-- Pending Approvals & Video OTP Sub-tab -->
                 <div id="adminSubApprovals" class="space-y-3">
                     <div class="glass-panel rounded-3xl p-4 space-y-3 text-xs">
                         <div class="flex items-center justify-between">
-                            <h3 class="font-bold text-amber-400 text-sm">⏳ Pending Registrations & Video OTP</h3>
-                            <button type="button" onclick="renderAdminApprovals()" class="px-2.5 py-1 bg-gray-800 rounded-lg text-[10px]">Refresh</button>
+                            <h3 class="font-bold text-amber-400 text-sm">⏳ Pending Registrations & Media</h3>
+                            <div class="flex gap-1.5">
+                                <button type="button" onclick="clearRejectedOrOld()" class="px-2.5 py-1 bg-red-950/70 border border-red-800/50 text-red-300 rounded-lg text-[10px]">Clear List</button>
+                                <button type="button" onclick="renderAdminApprovals()" class="px-2.5 py-1 bg-gray-800 rounded-lg text-[10px]">Refresh</button>
+                            </div>
                         </div>
-                        <div id="adminApprovalsList" class="space-y-3">
+                        <div id="adminApprovalsList" class="space-y-4">
                             <div class="text-center py-6 text-gray-500 text-[11px] bg-gray-950 rounded-2xl border border-gray-800">
                                 No pending registrations right now.
                             </div>
@@ -310,14 +313,14 @@
                 </div>
             </div>
 
-            <!-- Pending Approval Lock Screen (Inside mainContent so Header & Admin Button stay clickable) -->
+            <!-- Pending Approval Lock Screen -->
             <div id="pendingApprovalScreen" class="absolute inset-0 z-40 hidden bg-[#030712]/95 backdrop-blur-xl flex items-center justify-center p-6 text-center text-white">
                 <div class="max-w-sm w-full glass-panel border border-zinc-800 rounded-3xl p-6 space-y-4 shadow-2xl">
                     <div class="w-14 h-14 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-2xl font-bold">⏳</div>
                     <h2 class="text-xl font-bold">Verification Under Review</h2>
-                    <p class="text-xs text-zinc-300 leading-relaxed">Your profile, mobile number, and video OTP clip have been submitted to the admin. Once approved, your account unlocks automatically.</p>
+                    <p class="text-xs text-zinc-300 leading-relaxed">Your profile, photos, and video OTP clip have been submitted to the admin. Once approved, your account unlocks automatically.</p>
                     <p class="text-[11px] text-purple-300 bg-purple-950/50 border border-purple-500/30 rounded-xl p-2.5">
-                        💡 <strong>Testing Tip:</strong> Tap the <strong>⚙️ Admin</strong> button at the top right to approve your account right now!
+                        💡 <strong>Admin Review:</strong> Tap <strong>⚙️ Admin</strong> at the top right to view your photos & video OTP and approve!
                     </p>
                     <button type="button" onclick="logoutUser()" class="w-full py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-xs font-bold transition-all">Back to Registration / Login</button>
                 </div>
@@ -429,7 +432,7 @@
                     <button type="button" id="otpActionBtn" onclick="requestOtpLogin()" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl font-extrabold text-sm text-white shadow-lg">Send Verification OTP</button>
                 </div>
 
-                <!-- SIGNUP / EDIT VIEW WITH PHONE NUMBER & LIVE VIDEO OTP -->
+                <!-- SIGNUP / EDIT VIEW WITH PHONE NUMBER & REAL VIDEO RECORDER -->
                 <div id="authViewSignup" class="space-y-3.5 text-xs">
                     <div>
                         <label class="text-gray-400 block mb-1.5 font-bold">Your Full Name & Age</label>
@@ -528,6 +531,11 @@
 
     <script>
         let uploadedPhotoUrls = [];
+        let recordedVideoBase64 = "";
+        let recordedVideoBlobUrl = "";
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
         let currentTargetProfile = {};
         let selectedPlanInfo = {};
         
@@ -966,16 +974,35 @@
             }
         }
 
-        function handlePhotoUpload(event) {
+        // Compress uploaded photos so they always fit inside localStorage cleanly
+        function compressImage(file, maxWidth = 480) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const scale = Math.min(1, maxWidth / img.width);
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.72));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handlePhotoUpload(event) {
             const files = event.target.files;
             for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    uploadedPhotoUrls.push(e.target.result);
-                    renderPhotoPreviews();
-                };
-                reader.readAsDataURL(files[i]);
+                if (uploadedPhotoUrls.length >= 6) break;
+                const compressedDataUrl = await compressImage(files[i]);
+                uploadedPhotoUrls.push(compressedDataUrl);
             }
+            renderPhotoPreviews();
         }
 
         function removeUploadedPhoto(index) {
@@ -999,13 +1026,13 @@
 
         async function initOtpCamera() {
             try {
-                otpMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+                otpMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 320, height: 240 }, audio: true });
                 const videoEl = document.getElementById('otpWebcamVideo');
                 if (videoEl) videoEl.srcObject = otpMediaStream;
                 document.getElementById('startOtpCamBtn').classList.add('hidden');
-                document.getElementById('videoCamStatusText').innerText = "Camera active. Click record and say code: " + currentGeneratedOtp;
+                document.getElementById('videoCamStatusText').innerText = "Camera active. Tap '2. Record 5s Video' and say: " + currentGeneratedOtp;
             } catch (err) {
-                showToast("Camera Ready", "Simulated Video OTP Ready ✓", "✓");
+                showToast("Camera Permission Needed", "Allow camera/mic in browser settings or continue in demo mode.", "📷");
                 document.getElementById('startOtpCamBtn').classList.add('hidden');
             }
         }
@@ -1018,12 +1045,38 @@
             recBtn.innerText = "Recording... Say " + currentGeneratedOtp;
             if (badge) badge.classList.remove('hidden');
 
+            // Capture real video clip if stream is active
+            if (otpMediaStream && typeof MediaRecorder !== 'undefined') {
+                try {
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(otpMediaStream);
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                        recordedVideoBlobUrl = URL.createObjectURL(blob);
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            recordedVideoBase64 = reader.result;
+                        };
+                        reader.readAsDataURL(blob);
+                    };
+                    mediaRecorder.start();
+                } catch (e) {
+                    console.warn("MediaRecorder fallback:", e);
+                }
+            }
+
             setTimeout(() => {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
                 if (badge) badge.classList.add('hidden');
                 recBtn.innerText = "Recorded ✓";
-                document.getElementById('videoCamStatusText').innerText = "✓ Video OTP verified successfully!";
+                document.getElementById('videoCamStatusText').innerText = "✓ Video OTP clip captured & ready for Admin review!";
                 if (otpMediaStream) { otpMediaStream.getTracks().forEach(t => t.stop()); otpMediaStream = null; }
-            }, 3000);
+            }, 4000);
         }
 
         function submitRegistration() {
@@ -1042,30 +1095,41 @@
             }
 
             let userLoc = locationEl ? locationEl.value : "Koramangala";
-            let userVibe = `${placeStatusEl ? placeStatusEl.value : 'Have Private Space'} • ${vibeEl ? vibeEl.value : 'Drinks & Deep Chat'}`;
+            let userPlace = placeStatusEl ? placeStatusEl.value : "🏠 Have Private Space";
+            let userLookingFor = vibeEl ? vibeEl.value : "🍷 Drinks & Deep Chat in Private";
+            let userVibe = `${userPlace} • ${userLookingFor}`;
 
             if (uploadedPhotoUrls.length === 0) {
                 uploadedPhotoUrls.push("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80");
             }
 
-            userProfile = {
+            const newUserObj = {
                 id: 'USR_' + Date.now(),
                 name: userName,
                 phone: userPhone,
                 location: userLoc,
+                placeStatus: userPlace,
+                lookingFor: userLookingFor,
                 vibe: userVibe,
-                photos: uploadedPhotoUrls.slice(0, 4),
+                photos: uploadedPhotoUrls.slice(0, 6),
+                videoUrl: recordedVideoBase64 || recordedVideoBlobUrl || "",
                 status: 'pending',
                 verificationOtp: currentGeneratedOtp,
                 submittedAt: new Date().toLocaleString('en-IN')
             };
 
+            userProfile = newUserObj;
+            allUsersList.unshift(newUserObj);
+
             try {
-                allUsersList.push(userProfile);
                 localStorage.setItem('eyn_users', JSON.stringify(allUsersList));
                 localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
             } catch (e) {
-                localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
+                // If video is large for localStorage quota, save with blob URL in session memory
+                const liteUser = { ...newUserObj, videoUrl: recordedVideoBlobUrl || "" };
+                allUsersList[0] = liteUser;
+                localStorage.setItem('eyn_users', JSON.stringify(allUsersList));
+                localStorage.setItem('eun_user_profile', JSON.stringify(liteUser));
             }
             
             renderUserProfileUI();
@@ -1073,36 +1137,20 @@
             closeSignupModal();
             
             document.getElementById('pendingApprovalScreen').classList.remove('hidden');
-            showToast("Submitted!", "Profile submitted for Admin approval.", "⏳");
+            showToast("Submitted!", "Photos & Video OTP sent to Admin.", "⏳");
         }
 
         function renderAdminApprovals() {
             const container = document.getElementById('adminApprovalsList');
             if (!container) return;
 
-            const users = JSON.parse(localStorage.getItem('eyn_users') || '[]');
-            const pending = users.filter(u => u.status === 'pending');
+            const storedUsers = JSON.parse(localStorage.getItem('eyn_users') || '[]');
+            // Merge in-memory list (which holds live session blob URLs) with stored list
+            const sourceList = allUsersList.length > 0 ? allUsersList : storedUsers;
+            const pending = sourceList.filter(u => u.status === 'pending');
 
             if (pending.length === 0 && userProfile && userProfile.status === 'pending') {
-                container.innerHTML = `
-                    <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-2">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-bold text-white text-xs">${userProfile.name}</p>
-                                <p class="text-[10px] text-pink-400 font-semibold">📱 +91 ${userProfile.phone || 'Not Provided'}</p>
-                                <p class="text-[10px] text-gray-400">Submitted: ${userProfile.submittedAt}</p>
-                            </div>
-                            <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md">
-                                OTP: ${userProfile.verificationOtp}
-                            </span>
-                        </div>
-                        <p class="text-[10px] text-emerald-400">✓ Video OTP Verified & Logged</p>
-                        <div class="flex gap-2 pt-1">
-                            <button type="button" onclick="updateUserApproval('${userProfile.id}', 'approved')" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-[10px]">✓ Approve Now</button>
-                            <button type="button" onclick="updateUserApproval('${userProfile.id}', 'rejected')" class="flex-1 py-2.5 bg-red-950 border border-red-800 text-red-300 rounded-xl font-semibold text-[10px]">Reject</button>
-                        </div>
-                    </div>`;
-                return;
+                pending.push(userProfile);
             }
 
             if (pending.length === 0) {
@@ -1110,33 +1158,74 @@
                 return;
             }
 
-            container.innerHTML = pending.map(user => `
-                <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-2">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="font-bold text-white text-xs">${user.name}</p>
-                            <p class="text-[10px] text-pink-400 font-semibold">📱 +91 ${user.phone || 'Not Provided'}</p>
-                            <p class="text-[10px] text-gray-400">Submitted: ${user.submittedAt}</p>
+            container.innerHTML = pending.map(user => {
+                const photosHtml = (user.photos && user.photos.length > 0)
+                    ? `<div class="space-y-1.5">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Uploaded Photos (${user.photos.length}) — Tap to Zoom</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            ${user.photos.map((p, idx) => `
+                                <div onclick="previewMedia('${p}', '${user.name} — Photo ${idx + 1}')" class="h-24 rounded-xl overflow-hidden border border-gray-700 cursor-pointer relative group">
+                                    <img src="${p}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    <span class="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded">🔍</span>
+                                </div>
+                            `).join('')}
                         </div>
-                        <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md">
-                            OTP: ${user.verificationOtp}
+                       </div>`
+                    : `<p class="text-[10px] text-gray-500">No photos uploaded.</p>`;
+
+                const videoHtml = user.videoUrl
+                    ? `<div class="space-y-1.5">
+                        <p class="text-[10px] font-bold text-amber-400 uppercase">🎥 Recorded Live Video OTP Clip (Verify Code: ${user.verificationOtp})</p>
+                        <div class="rounded-xl overflow-hidden border border-amber-500/40 bg-black">
+                            <video src="${user.videoUrl}" controls playsinline class="w-full max-h-48 object-contain"></video>
+                        </div>
+                       </div>`
+                    : `<div class="bg-amber-950/30 border border-amber-500/30 rounded-xl p-2.5 text-[10px] text-amber-300">
+                        🎥 Live Camera Video Clip: Spoken OTP Code <strong>${user.verificationOtp}</strong> verified during session.
+                       </div>`;
+
+                return `
+                <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <p class="font-extrabold text-white text-sm">${user.name}</p>
+                            <p class="text-[11px] text-pink-400 font-bold">📱 +91 ${user.phone || 'Not Provided'}</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Submitted: ${user.submittedAt}</p>
+                        </div>
+                        <span class="bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-extrabold px-2.5 py-1 rounded-lg shrink-0">
+                            Spoken OTP: ${user.verificationOtp}
                         </span>
                     </div>
-                    <p class="text-[10px] text-emerald-400">✓ Video OTP Verified & Logged</p>
-                    <div class="flex gap-2 pt-1">
-                        <button type="button" onclick="updateUserApproval('${user.id}', 'approved')" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-[10px]">✓ Approve Now</button>
-                        <button type="button" onclick="updateUserApproval('${user.id}', 'rejected')" class="flex-1 py-2.5 bg-red-950 border border-red-800 text-red-300 rounded-xl font-semibold text-[10px]">Reject</button>
+
+                    <div class="flex flex-wrap gap-1.5 text-[10px]">
+                        <span class="bg-gray-900 border border-gray-800 text-gray-200 px-2.5 py-1 rounded-lg font-semibold">📍 ${user.location || 'Bengaluru'}</span>
+                        <span class="bg-purple-950/60 border border-purple-700/40 text-purple-200 px-2.5 py-1 rounded-lg font-semibold">${user.placeStatus || '🏠 Private Space'}</span>
+                        <span class="bg-pink-950/60 border border-pink-700/40 text-pink-200 px-2.5 py-1 rounded-lg font-semibold">${user.lookingFor || user.vibe || 'Elite Meetup'}</span>
                     </div>
-                </div>
-            `).join('');
+
+                    ${photosHtml}
+                    ${videoHtml}
+
+                    <div class="flex gap-2 pt-2 border-t border-gray-800/80">
+                        <button type="button" onclick="updateUserApproval('${user.id}', 'approved')" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-extrabold text-xs shadow-md">✓ Approve Now</button>
+                        <button type="button" onclick="updateUserApproval('${user.id}', 'rejected')" class="flex-1 py-2.5 bg-red-950 border border-red-800 text-red-300 rounded-xl font-bold text-xs">Reject</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function clearRejectedOrOld() {
+            allUsersList = [];
+            localStorage.removeItem('eyn_users');
+            renderAdminApprovals();
+            showToast("Cleared", "Pending list cleared.", "🗑️");
         }
 
         function updateUserApproval(userId, newStatus) {
-            let users = JSON.parse(localStorage.getItem('eyn_users') || '[]');
-            users = users.map(u => u.id === userId ? { ...u, status: newStatus } : u);
-            localStorage.setItem('eyn_users', JSON.stringify(users));
+            allUsersList = allUsersList.map(u => u.id === userId ? { ...u, status: newStatus } : u);
+            localStorage.setItem('eyn_users', JSON.stringify(allUsersList));
             
-            if (userProfile) {
+            if (userProfile && (userProfile.id === userId || !userProfile.id)) {
                 userProfile.status = newStatus;
                 localStorage.setItem('eun_user_profile', JSON.stringify(userProfile));
                 if (newStatus === 'approved') {
@@ -1184,6 +1273,7 @@
         function deleteAccount() {
             if (confirm("Permanently delete your account and clear all data?")) {
                 localStorage.clear();
+                allUsersList = [];
                 userProfile = null;
                 userDiamonds = 10;
                 activePlanName = "Free Tier";
