@@ -3,12 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Supabase Login Demo</title>
+  <title>Login Demo</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 360px; margin: 40px auto; padding: 0 16px; }
-    input, button { display: block; width: 100%; padding: 10px; margin: 8px 0; font-size: 16px; box-sizing: border-box; }
-    button { cursor: pointer; }
-    #message { margin-top: 12px; color: #333; word-break: break-word; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 360px;
+      margin: 40px auto;
+      padding: 0 16px;
+      color: #222;
+    }
+    h2 { margin-bottom: 16px; }
+    input, button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 16px;
+      box-sizing: border-box;
+      border-radius: 6px;
+    }
+    input { border: 1px solid #bbb; }
+    button {
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      cursor: pointer;
+    }
+    button.secondary { background: #6b7280; }
+    button:disabled { opacity: 0.6; cursor: wait; }
+    #message {
+      margin-top: 14px;
+      min-height: 22px;
+      word-break: break-word;
+    }
     .hidden { display: none; }
   </style>
 </head>
@@ -16,22 +43,22 @@
   <h2>Login / Sign up</h2>
 
   <div id="auth-box">
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password (min 6 characters)" />
+    <input id="email" type="email" placeholder="Email" autocomplete="email" />
+    <input id="password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" />
     <button id="signin-btn">Sign in</button>
-    <button id="signup-btn">Sign up</button>
+    <button id="signup-btn" class="secondary">Sign up</button>
   </div>
 
   <div id="user-box" class="hidden">
     <p>Logged in as: <b id="user-email"></b></p>
-    <button id="signout-btn">Sign out</button>
+    <button id="signout-btn" class="secondary">Sign out</button>
   </div>
 
   <p id="message"></p>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Your project details (the publishable key is safe for browser code)
+    // Your Supabase project details (the publishable key is safe in browser code)
     const SUPABASE_URL = "https://wswheiketugqozxgmywj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_Rz71BtlDUKmj2IXsgeK9rw__MwmqiV-";
 
@@ -43,9 +70,32 @@
     const authBox = document.getElementById("auth-box");
     const userBox = document.getElementById("user-box");
     const userEmail = document.getElementById("user-email");
+    const signInBtn = document.getElementById("signin-btn");
+    const signUpBtn = document.getElementById("signup-btn");
+    const signOutBtn = document.getElementById("signout-btn");
 
-    function showMessage(text) {
+    function showMessage(text, isError = false) {
       message.textContent = text;
+      message.style.color = isError ? "#b91c1c" : "#15803d";
+    }
+
+    function setBusy(busy) {
+      signInBtn.disabled = busy;
+      signUpBtn.disabled = busy;
+    }
+
+    function getCredentials() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) {
+        showMessage("Please enter both email and password.", true);
+        return null;
+      }
+      if (password.length < 6) {
+        showMessage("Password must be at least 6 characters.", true);
+        return null;
+      }
+      return { email, password };
     }
 
     function updateUI(user) {
@@ -60,33 +110,47 @@
       }
     }
 
-    document.getElementById("signup-btn").addEventListener("click", async () => {
-      const { data, error } = await supabaseClient.auth.signUp({
-        email: emailInput.value,
-        password: passwordInput.value,
-      });
-      if (error) {
-        showMessage("Error: " + error.message);
-      } else if (data.session) {
-        showMessage("Account created and logged in.");
-      } else {
-        showMessage("Account created. Check your email to confirm, then sign in.");
+    signUpBtn.addEventListener("click", async () => {
+      const creds = getCredentials();
+      if (!creds) return;
+
+      setBusy(true);
+      try {
+        const { data, error } = await supabaseClient.auth.signUp(creds);
+        if (error) {
+          showMessage("Error: " + error.message, true);
+        } else if (data.session) {
+          showMessage("Account created and logged in.");
+        } else {
+          showMessage("Account created. Check your email to confirm, then sign in.");
+        }
+      } catch (err) {
+        showMessage("Something went wrong: " + err.message, true);
+      } finally {
+        setBusy(false);
       }
     });
 
-    document.getElementById("signin-btn").addEventListener("click", async () => {
-      const { error } = await supabaseClient.auth.signInWithPassword({
-        email: emailInput.value,
-        password: passwordInput.value,
-      });
-      if (error) {
-        showMessage("Error: " + error.message);
-      } else {
-        showMessage("Signed in.");
+    signInBtn.addEventListener("click", async () => {
+      const creds = getCredentials();
+      if (!creds) return;
+
+      setBusy(true);
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword(creds);
+        if (error) {
+          showMessage("Error: " + error.message, true);
+        } else {
+          showMessage("Signed in.");
+        }
+      } catch (err) {
+        showMessage("Something went wrong: " + err.message, true);
+      } finally {
+        setBusy(false);
       }
     });
 
-    document.getElementById("signout-btn").addEventListener("click", async () => {
+    signOutBtn.addEventListener("click", async () => {
       await supabaseClient.auth.signOut();
       showMessage("Signed out.");
     });
@@ -94,6 +158,11 @@
     // Keep the screen in sync with the login state
     supabaseClient.auth.onAuthStateChange((_event, session) => {
       updateUI(session ? session.user : null);
+    });
+
+    // Check for an existing session when the page loads
+    supabaseClient.auth.getSession().then(({ data }) => {
+      updateUI(data.session ? data.session.user : null);
     });
   </script>
 </body>
